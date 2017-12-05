@@ -1,0 +1,19 @@
+.affil-R {
+	color: red;
+}
+
+.affil-D {
+	color: blue;
+}
+
+.affil-I {
+	color: green;
+}
+
+.results-bill-tile {
+	margin: 10px;	
+}
+
+.results-bill-tile h4 {
+	font-size: 1.25em;
+}
