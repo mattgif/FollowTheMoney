@@ -13,8 +13,6 @@ function handleSearch(){
 	$('.search-form').submit(e => {		
 		e.preventDefault();
 		const searchTerm = $('.search-query').val();
-		console.log('this: ');
-		console.log(this);
 		if ($('.search-type').val() === "b"){
 			getDataFromPropublica(searchTerm,displayBillResults);
 		} else {
@@ -79,6 +77,7 @@ function truncate(title){
 function displayBillResults(data){
 	console.log(data);	
 	// debug - remove logging from final!
+	clearContent();
 	let resultCount = data.results[0].num_results;
 	let resultCountText = `${resultCount} results found`;
 	if (resultCount > 0){		
@@ -115,6 +114,12 @@ function handleSearchTypeChange(){
 }
 
 function displaySplash(){
+	// clears out all elements and displays the landing html
+	$('nav').html('');
+	$('.results').html('');
+	$('.detail-view').html('');
+	$('nav').prop('hidden',true)
+	$('.splash-content').prop('hidden',false)
 	$('.splash-content').html(
 		`
 		<header role="banner">
@@ -142,21 +147,21 @@ function displaySplash(){
 	);
 }
 
-function hideMainSearchElement(){
-	$('.primary.search').prop('hideen',true);
-
+function hideSplash(){
+	$('.splash-content').prop('hidden',true);
+	$('.splash-content').html('');
 }
 
 function showTopBarSearch(){
 	$('nav').prop('hidden',false);
 	$('nav').html(
 		`
-		<h4 class="brand"><a href="#">Follow the <i class="fa fa-money"></i></a></h4>
-		<div class="nav search" role="search" hidden>
+		<h4 class="brand"><a href="#" onClick="displaySplash()">Follow the <i class="fa fa-money"></i></a></h4>
+		<div class="nav search" role="search">
 			<form action="#" class="nav search-form">
 				<select class="nav search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
-					<option value="b" selected="selected" aria-label="search for a bill"><i class="fa fa-file-text" aria-hidden="true"></i></option>
-					<option value="l" aria-label="search for a legislator"><i class="fa fa-users" aria-hidden="true"></i></option>
+					<option value="b" selected="selected" aria-label="search for a bill">Bill</option>
+					<option value="l" aria-label="search for a legislator">Legislator</option>
 				</select>				
 				<input type="text" name="nav search-query" class="search-query" aria-label="search" placeholder="Search for a bill...">
 				<button type="nav submit"><i class="fa fa-search" aria-hidden="true"></i></button>			
@@ -164,6 +169,13 @@ function showTopBarSearch(){
 		</div>		
 		`
 	);
+}
+
+function clearContent(){
+	hideSplash();
+	$('.results').html('')
+	$('.detail-view').html('')
+	showTopBarSearch();
 }
 
 function pageHandler(){
