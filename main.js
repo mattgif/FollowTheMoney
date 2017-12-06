@@ -87,22 +87,28 @@ function displayBillResults(data){
 function handleBillClick(){
 	$('.results').on('click','.bill-request', function(e) {		
 		e.preventDefault();
+		PAGE_CACHE.results = $('.results').html();
+		// stores results page in variable so user can navigate back to it w/o making another external call
 		let url = $(this).attr('href');
-		getPropublicaDetails(url,displayBill);
+		if (PAGE_CACHE.billData && PAGE_CACHE.billData.results[0].bill_uri === url){
+			// checks to see if bill data is cached, and if so retrieves cached version
+			console.log('Cached version found!')
+			// debug -- remove!!
+			displayBill(PAGE_CACHE.billData);
+		} else {
+			getPropublicaDetails(url,displayBill);	
+		}		
 	});
 }
 
 function displayBill(data){
+	PAGE_CACHE.billData = data;
+	// caches data to save on ajax calls
 	console.log(data);
 	// debug -- remove!	
-	let results = $('.results').html();
-	// stores results page in variable so user can navigate back to it w/o making another external call
+
 	clearContent();	
 	const bill = data.results[0];
-	let cid = getPropublicaDetails(bill.sponsor_uri,getRepCIDFromPropublica);
-	// hits PP with ajax request about sponsor, and returns CRP_ID
-	console.log("CID: " + cid);
-	// debug -- remove!
 	let summary = null;
 	let datefield = null;
 	if (bill.summary_short) {
@@ -140,7 +146,7 @@ function displayBill(data){
 			</div>
 		`	
 	);
-	handleReturnToResults(results);
+	handleReturnToResults();
 }
 
 // legislator functionality
@@ -178,11 +184,11 @@ function getRepDataFromOpenSecrets(cid){
 }
 
 // core functionality
-function handleReturnToResults(results){
+function handleReturnToResults(){
 	$('.back-to-results-link').click(e => {
 		e.preventDefault();
 		clearContent();
-		$('.results').html(results);
+		$('.results').html(PAGE_CACHE.results);
 	});
 }
 
