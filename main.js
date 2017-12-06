@@ -7,20 +7,10 @@ const OPENSECRETS_API_KEY = '4f65ef721d8386530390255880acbbb9'
 const settings = {
 	// settings for how data gets displayed
 	titleLength: 125,
+	splashDisplayed: 1,
 }
 
-function handleSearch(){
-	$('.search-form').submit(e => {		
-		e.preventDefault();
-		const searchTerm = $('.search-query').val();
-		if ($('.search-type').val() === "b"){
-			getDataFromPropublica(searchTerm,displayBillResults);
-		} else {
-			handleRepSearch(searchTerm);
-		}
-	})
-}
-
+// bill functionality
 function getDataFromPropublica(searchTerm,callback){	
 	$.ajax({		
 		headers: {'X-API-Key': PROPUBLICA_API_KEY},
@@ -35,19 +25,15 @@ function getDataFromPropublica(searchTerm,callback){
 	})
 }
 
-function handleRepSearch(searchTerm){
-	console.log('handleRepSearch called');
-}
-
 function renderBillResults(item){
 	// returns html used to display bill results
 	const title = renderTitle(item);	
 	return `
 		<div class="results-bill-tile">
-			<h4 class='results-bill-title'>${title}</h4>
+			<h4 class='results-bill-title'><a href="${item.bill_uri}" class="bill-request">${title}</a></h4>
 			<p>Bill number: ${item.number} | Introduced ${item.introduced_date}</p>
 			<p>Subject: ${item.primary_subject}</p>
-			<p>Sponsor: ${item.sponsor_title} ${item.sponsor_name} (<span class="affil-${item.sponsor_party}">${item.sponsor_party}</span>-${item.sponsor_state})</p>
+			<p>Sponsor: <a href="${item.sponsor_uri}" class="rep-request">${item.sponsor_title} ${item.sponsor_name} (<span class="affil-${item.sponsor_party}">${item.sponsor_party}</span>-${item.sponsor_state})</a></p>
 		</div>
 	`
 }
@@ -75,8 +61,6 @@ function truncate(title){
 }
 
 function displayBillResults(data){
-	console.log(data);	
-	// debug - remove logging from final!
 	clearContent();
 	let resultCount = data.results[0].num_results;
 	let resultCountText = `${resultCount} results found`;
@@ -97,24 +81,153 @@ function displayBillResults(data){
 			${resultCountText}
 		</div>
 		`
+	);	
+}
+
+function handleBillClick(){
+	$('.results').on('click','.bill-request', function(e) {		
+		e.preventDefault();
+		let url = $(this).attr('href');
+		getPropublicaDetails(url,displayBill);
+	});
+}
+
+function displayBill(data){
+	console.log(data);
+	// debug -- remove!	
+	let results = $('.results').html();
+	// stores results page in variable so user can navigate back to it w/o making another external call
+	clearContent();	
+	const bill = data.results[0];
+	let cid = getPropublicaDetails(bill.sponsor_uri,getRepCIDFromPropublica);
+	// hits PP with ajax request about sponsor, and returns CRP_ID
+	console.log("CID: " + cid);
+	// debug -- remove!
+	let summary = null;
+	let datefield = null;
+	if (bill.summary_short) {
+		// apparently not all bills have summaries. there should be a law or something!
+		summary = bill.summary_short;
+	} else if (bill.summary) {
+		summary = bill.summary;
+	} else {
+		summary = 'No summary available.'
+	}
+	if (bill.enacted){		
+		datefield = `Enacted: ${bill.enacted}`;
+	} else {
+		datefield = `Introduced: ${bill.introduced_date}`;
+	}
+	$('.detail-view').html(
+		`	<div class="back-to-results">
+				<a href="#" class="back-to-results-link">&lt; Back to results</a>
+			</div>
+			<div class="bill-title">
+				<h1>${bill.title}</h1>
+			</div>
+			<div class="date">
+				<p>${datefield}</p>
+			</div>
+			<div class="sponsor-tile">
+				<h2>Sponsor:</h2>
+				<p><a href="${bill.sponsor_uri}" class="rep-request">${bill.sponsor_title} ${bill.sponsor} (<span class="affil-${bill.sponsor_party}">${bill.sponsor_party}</span>-${bill.sponsor_state})</a></p>
+				<div class="donors">
+				</div>
+			</div>
+			<div class="bill-summary">
+				<h3>Summary:</h3>
+				<p>${summary}</p>
+			</div>
+		`	
 	);
-	
+	handleReturnToResults(results);
+}
+
+// legislator functionality
+function handleRepSearch(searchTerm){
+	console.log('handleRepSearch called');
+	console.log('this feature not yet implemented');
+}
+
+function handleRepClick(url){
+	$('.results').on('click','.rep-request', function(e) {
+		e.preventDefault();
+		let url = $(this).attr('href');
+		getPropublicaDetails(url,displayRep);
+	})
+}
+
+function displayRep(data){
+	console.log('displayRep called');
+	console.log(data);
+	// debug -- remove!!
+}
+
+function getRepCIDFromPropublica(data){
+	console.log('getRepCIDFromPropublica called -- Rep retrieved')
+	console.log(data)
+	// debug -- remove!!
+	let cid = data.results[0].crp_id;
+	console.log("CID is: " + cid);
+	return cid;
+}
+
+function getRepDataFromOpenSecrets(cid){
+	console.log('getRepDataFromOpenSecrets called');
+	console.log('this feature not yet implemented');
+}
+
+// core functionality
+function handleReturnToResults(results){
+	$('.back-to-results-link').click(e => {
+		e.preventDefault();
+		clearContent();
+		$('.results').html(results);
+	});
+}
+
+function getPropublicaDetails(url,callback){	
+	$.ajax({		
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: url,
+		datatype: 'json',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+function handleSearch(){
+	$('body').on('submit', '.search-form', e => {		
+		e.preventDefault();
+		const searchTerm = $('.search-query').val();
+		if ($('.search-type').val() === "b"){
+			getDataFromPropublica(searchTerm,displayBillResults);
+		} else {
+			handleRepSearch(searchTerm);
+		}
+	})
 }
 
 function handleSearchTypeChange(){
-	$('.search-type').change(() => {
-		if ($('.search-type').val() === "b") {
-			$('.js-search-bill').prop('hidden',false);
-			$('.js-search-rep').prop('hidden',true);
-		} else {
-			$('.js-search-bill').prop('hidden',true);
-			$('.js-search-rep').prop('hidden',false);
-		};
+	$('.splash-content').on('change','.search-type',() => {
+		if (settings.splashDisplayed) {
+			if ($('.search-type').val() === "b") {
+				$('.js-search-bill').prop('hidden',false);
+				$('.js-search-rep').prop('hidden',true);
+				$('.search-query').attr('placeholder','Search for a bill...');
+			} else {
+				$('.js-search-bill').prop('hidden',true);
+				$('.js-search-rep').prop('hidden',false);
+				$('.search-query').attr('placeholder','Search for a legislator...');
+			};	
+		};;		
 	});
 }
 
 function displaySplash(){
 	// clears out all elements and displays the landing html
+	settings.splashDisplayed = 1;
 	$('nav').html('');
 	$('.results').html('');
 	$('.detail-view').html('');
@@ -148,6 +261,7 @@ function displaySplash(){
 }
 
 function hideSplash(){
+	settings.splashDisplayed = 0;
 	$('.splash-content').prop('hidden',true);
 	$('.splash-content').html('');
 }
@@ -182,6 +296,8 @@ function pageHandler(){
 	// runs listeners for page
 	displaySplash();
 	handleSearch();
+	handleRepClick();
+	handleBillClick();
 	handleSearchTypeChange();
 }
 
