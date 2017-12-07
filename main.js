@@ -8,72 +8,40 @@ const settings = {
 }
 
 // bill functionality
-function getDataFromPropublica(searchTerm,callback){	
-	$.ajax({		
-		headers: {'X-API-Key': PROPUBLICA_API_KEY},
-		// ProPub requires key in header
-		url: PROPUBLICA_ENDPOINT,
-		data: {
-			query: searchTerm,
-		},
-		datatype: 'json',
-		type: 'GET',
-		success: callback,
-	})
-}
+function displayBill(bill){	
+	clearContent();		
+	let summary = getBillSummary(bill);
+	let datefield = relevantBillDateType(bill);
 
-function renderBillResults(item){
-	// returns html used to display bill results
-	const title = renderTitle(item);	
-	const context = {
-		bill_uri: item.bill_uri, 
-		title: title, 
-		number: item.number, 
-		introduced_date: item.introduced_date, 
-		subject: item.primary_subject,
-		sponsor_uri: item.sponsor_uri,
-		sponsor: item.sponsor_name,
-		sponsor_title: item.sponsor_title,
-		sponsor_party: item.sponsor_party,
-		state: item.sponsor_state,
+	// handlebars context dic and calls below
+	let context = {
+		title: bill.title,
+		date: datefield,
+		sponsor_uri: bill.sponsor_uri,
+		sponsor_title: bill.sponsor_title,
+		sponsor: bill.sponsor_name,
+		sponsor_part: bill.sponsor_party,
+		sponsor_state: bill.sponsor_state,
+		summary: summary,
 	}
-	let source = $('#bill_result_template').html();
+
+	let source = $('#bill_details_template').html();
 	let template = Handlebars.compile(source);
 	let html = template(context);
-	return html
-}
 
-function renderTitle(item){
-	// makes sure bill titles are reasonable length
-	let title = null;	
-	if (item.short_title){
-		// checks to see if short title is available, and uses that if it is
-		title = item.short_title;
-	} else {
-		title = item.title;
-	}
-	if (title.length > settings.titleLength) {
-		title = truncate(title);
-	}
-	return title;
-}
+	$('.detail-view').html(html);
 
-function truncate(title){
-	// truncates obscenely long titles at the last space before the 125th char
-	const snip = title.slice(0,settings.titleLength);
-	const finalSpace = snip.lastIndexOf(" ");
-	return snip.slice(0,finalSpace) + "…";
+	handleReturnToResults();
+	// retrieves results info from cache when 'return' link is clicked
 }
 
 function displayBillResults(data){
+	console.log(data)
+	// debug -- remove!!
 	clearContent();
 	let resultCount = data.results[0].num_results;
-	let resultCountText = `${resultCount} results found`;
+	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
 	if (resultCount > 0){		
-		if (resultCount === 1){
-			// pluralization 
-			resultCountText = `${resultCount} result found`;
-		}
 		const results = data.results[0].bills.map((item) => renderBillResults(item));
 		$('.results').html(results);
 	} else {
@@ -89,68 +57,82 @@ function displayBillResults(data){
 	);	
 }
 
+function getBillDataFromPropublica(searchTerm,callback){	
+	$.ajax({		
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: PROPUBLICA_ENDPOINT,
+		data: {
+			query: searchTerm,
+		},
+		datatype: 'json',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+function getBillSummary(billObj) {
+	// apparently not all bills have summaries. there should be a law or something!
+	if (billObj.summary_short) {		
+		return billObj.summary_short;
+	} else if (billObj.summary) {
+		return billObj.summary;
+	} else {
+		return 'No summary available.';
+	}
+}
+
 function handleBillClick(){
 	$('.results').on('click','.bill-request', function(e) {		
 		e.preventDefault();
 		PAGE_CACHE.results = $('.results').html();
 		// stores results page in variable so user can navigate back to it w/o making another external call
-		let url = $(this).attr('href');
-		if (PAGE_CACHE.billData && PAGE_CACHE.billData.results[0].bill_uri === url){
-			// checks to see if bill data is cached, and if so retrieves cached version
-			console.log('Cached version found!')
-			// debug -- remove!!
-			displayBill(PAGE_CACHE.billData);
-		} else {
-			getPropublicaDetails(url,displayBill);	
-		}		
+		let bill_id = $(this).attr('id');		
+		displayBill(PAGE_CACHE[bill_id]);
 	});
 }
 
-function displayBill(data){
-	PAGE_CACHE.billData = data;
-	// caches data to save on ajax calls
-	console.log(data);
-	// debug -- remove!	
-
-	clearContent();	
-	const bill = data.results[0];
-	let summary = null;
-	let datefield = null;
-	if (bill.summary_short) {
-		// apparently not all bills have summaries. there should be a law or something!
-		summary = bill.summary_short;
-	} else if (bill.summary) {
-		summary = bill.summary;
-	} else {
-		summary = 'No summary available.'
+function renderBillResults(item){
+	// returns html used to display bill results
+	const title = renderTitle(item);	
+	const context = {
+		bill_uri: item.bill_uri,		
+		datefield: relevantBillDateType(item),
+		bill_id: item.bill_id,
+		number: item.number, 
+		sponsor_uri: item.sponsor_uri,
+		sponsor: item.sponsor_name,
+		sponsor_title: item.sponsor_title,
+		sponsor_party: item.sponsor_party,
+		state: item.sponsor_state,
+		subject: (item.primary_subject) ? `Subject: ${item.primary_subject}` : '',
+		title: title,
 	}
-	if (bill.enacted){
-		// Selects most salient date format
-		datefield = `Enacted: ${bill.enacted}`;
-	} else {
-		datefield = `Introduced: ${bill.introduced_date}`;
-	}
-
-	// handlebars context dic and calls below
-	let context = {
-		title: bill.title,
-		date: datefield,
-		sponsor_uri: bill.sponsor_uri,
-		sponsor_title: bill.sponsor_title,
-		sponsor: bill.sponsor,
-		sponsor_part: bill.sponsor_party,
-		sponsor_state: bill.sponsor_state,
-		summary: summary,
-	}
-
-	let source = $('#bill_details_template').html();
+	PAGE_CACHE[context.bill_id] = item;
+	// caches bill data for retrieval
+	let source = $('#bill_result_template').html();
 	let template = Handlebars.compile(source);
 	let html = template(context);
+	return html
+}
 
-	$('.detail-view').html(html);
+function relevantBillDateType(billObj) {
+	// returns str representing date enacted, if the bill was enacted, str reprenting introduction date otherwise
+	return (billObj.enacted) ? `Enacted: ${billObj.enacted}` : `Introduced: ${billObj.introduced_date}`;	
+}
 
-	handleReturnToResults();
-	// retrieves results info from cache
+function renderTitle(billItem){
+	// makes sure bill titles are reasonable length
+	let title = billItem.short_title ? billItem.short_title : billItem.title;
+	(title.length > settings.titleLength) ? truncate(title) : title;
+	return title;
+}
+
+function truncate(title){
+	// truncates obscenely long titles at the last space before the 125th char
+	const snip = title.slice(0,settings.titleLength);
+	const finalSpace = snip.lastIndexOf(" ");
+	return snip.slice(0,finalSpace) + "…";
 }
 
 // legislator functionality
@@ -183,12 +165,26 @@ function getRepCIDFromPropublica(data){
 }
 
 // core functionality
-function handleReturnToResults(){
-	$('.back-to-results-link').click(e => {
-		e.preventDefault();
-		clearContent();
-		$('.results').html(PAGE_CACHE.results);
-	});
+function clearContent(){
+	// clears splash elements and removes any results or details currently displayed; used to transition to new page
+	hideSplash();
+	$('.results').html('')
+	$('.detail-view').html('')
+	showTopBarSearch();
+}
+
+function displaySplash(){
+	// clears out all elements and displays the landing html
+	settings.splashDisplayed = 1;
+	$('nav').html('');
+	$('.results').html('');
+	$('.detail-view').html('');
+	$('nav').prop('hidden',true)
+	$('.splash-content').prop('hidden',false)
+
+	let splashContent = $('#splash-content-template').html()
+
+	$('.splash-content').html(splashContent);
 }
 
 function getPropublicaDetails(url,callback){	
@@ -202,12 +198,20 @@ function getPropublicaDetails(url,callback){
 	})
 }
 
+function handleReturnToResults(){
+	$('.back-to-results-link').click(e => {
+		e.preventDefault();
+		clearContent();
+		$('.results').html(PAGE_CACHE.results);
+	});
+}
+
 function handleSearch(){
 	$('body').on('submit', '.search-form', e => {		
 		e.preventDefault();
 		const searchTerm = $('.search-query').val();
 		if ($('.search-type').val() === "b"){
-			getDataFromPropublica(searchTerm,displayBillResults);
+			getBillDataFromPropublica(searchTerm,displayBillResults);
 		} else {
 			handleRepSearch(searchTerm);
 		}
@@ -230,24 +234,14 @@ function handleSearchTypeChange(){
 	});
 }
 
-function displaySplash(){
-	// clears out all elements and displays the landing html
-	settings.splashDisplayed = 1;
-	$('nav').html('');
-	$('.results').html('');
-	$('.detail-view').html('');
-	$('nav').prop('hidden',true)
-	$('.splash-content').prop('hidden',false)
-
-	let splashContent = $('#splash-content-template').html()
-
-	$('.splash-content').html(splashContent);
-}
-
 function hideSplash(){
 	settings.splashDisplayed = 0;
 	$('.splash-content').prop('hidden',true);
 	$('.splash-content').html('');
+}
+
+function pluralize(count,word){	
+	return count === 1 ? word : (word + 's');
 }
 
 function showTopBarSearch(){
@@ -256,13 +250,7 @@ function showTopBarSearch(){
 	$('nav').html(topBarSearch);
 }
 
-function clearContent(){
-	hideSplash();
-	$('.results').html('')
-	$('.detail-view').html('')
-	showTopBarSearch();
-}
-
+// page handling
 function pageHandler(){
 	// runs listeners for page
 	displaySplash();

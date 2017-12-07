@@ -65,9 +65,9 @@
 	</script>
 	<script type="text/x-handlebars-template" id="bill_result_template">
 		<div class="results-bill-tile">
-			<h4 class="results-bill-title"><a href="{{bill_uri}}" class="bill-request">{{title}}</a></h4>
-			<p>Bill number: {{number}} | Introduced {{introduced_date}}</p>
-			<p>Subject: {{subject}}</p>
+			<h4 class="results-bill-title"><a href="#?{{bill_id}}" id="{{bill_id}}" class="bill-request">{{title}}</a></h4>
+			<p>Bill number: {{number}} | {{datefield}}</p>
+			<p>{{subject}}</p>
 			<p>Sponsor: <a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{state}})</a></p>
 		</div>
 	</script>
