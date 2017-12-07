@@ -14,6 +14,7 @@
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   		crossorigin="anonymous">
   	</script>
+  	<script type="text/javascript" src="handlebars-v4.0.11.js"></script>
 </head>
 <body>
 	<nav role="navigation" hidden>	
@@ -26,6 +27,71 @@
 		<div class="detail-view" aria-live="polite"></div>
 	</main>
 
+	<script type="text/x-handlebars-template" id="top-nav-template">
+		<h4 class="brand"><a href="#" onClick="displaySplash()">Follow the <i class="fa fa-money"></i></a></h4>
+		<div class="nav search" role="search">
+			<form action="#" class="nav search-form">
+				<select class="nav search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
+					<option value="b" selected="selected" aria-label="search for a bill">Bill</option>
+					<option value="l" aria-label="search for a legislator">Legislator</option>
+				</select>				
+				<input type="text" name="nav search-query" class="search-query" aria-label="search" placeholder="Search for a bill...">
+				<button type="nav submit"><i class="fa fa-search" aria-hidden="true"></i></button>			
+			</form>			
+		</div>		
+	</script>
+	<script type="text/x-handlebars-template" id="splash-content-template">
+		<header role="banner">
+			<h1 class="maintitle">Follow the Money</h1>
+			<h2 class="subtitle">Trace the money behind legislation</h2>
+		</header>
+
+		<section class="primary search" role="search">
+			<form action="#" class="search-form">
+				<label for="search-type" class="search-type-label">I want to search for </label>
+				<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
+					<option value="b" selected="selected">a bill</option>
+					<option value="l">a legislator</option>
+				</select>
+				<label for="search-query" class="js-search-icon"><i class="fa fa-search" aria-hidden="true"></i></label>
+				<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill...">
+				<button type="submit">Search</button>
+			</form>
+			<div class="instructions">
+				<p class="js-search-bill">Enter a topic or bill name to start tracing the finances behind legislation.</p>
+				<p class="js-search-rep" hidden>Search for a legislator to find their major donors, legislation they've sponsored, and their voting record.</p>
+			</div>
+		</section>
+	</script>
+	<script type="text/x-handlebars-template" id="bill_result_template">
+		<div class="results-bill-tile">
+			<h4 class="results-bill-title"><a href="{{bill_uri}}" class="bill-request">{{title}}</a></h4>
+			<p>Bill number: {{number}} | Introduced {{introduced_date}}</p>
+			<p>Subject: {{subject}}</p>
+			<p>Sponsor: <a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{state}})</a></p>
+		</div>
+	</script>
+	<script type="text/x-handlebars-template" id="bill_details_template">
+			<div class="back-to-results">
+				<a href="#" class="back-to-results-link">&lt; Back to results</a>
+			</div>
+			<div class="bill-title">
+				<h1>{{title}}</h1>
+			</div>
+			<div class="date">
+				<p>{{date}}</p>
+			</div>
+			<div class="sponsor-tile">
+				<h2>Sponsor:</h2>
+				<p><a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{sponsor_state}})</a></p>
+				<div class="donors">
+				</div>
+			</div>
+			<div class="bill-summary">
+				<h3>Summary:</h3>
+				<p>{{summary}}</p>
+			</div>
+	</script>
 	<script type="text/javascript" src="pagecache.js"></script>
 	<script type="text/javascript" src="main.js"></script>
 </body>
