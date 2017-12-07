@@ -36,8 +36,6 @@ function displayBill(bill){
 }
 
 function displayBillResults(data){
-	console.log(data)
-	// debug -- remove!!
 	clearContent();
 	let resultCount = data.results[0].num_results;
 	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
@@ -54,7 +52,14 @@ function displayBillResults(data){
 			${resultCountText}
 		</div>
 		`
-	);	
+	);
+	PAGE_CACHE.results = $('.results').html();
+	// stores results page in variable so user can navigate back to it w/o making another external call
+	let searchTerm = PAGE_CACHE.currentSearchTerm;
+	if (!PAGE_CACHE.searchTermResults['b'].searchTerm) {
+		PAGE_CACHE.searchTermResults['b'].searchTerm = data;
+	}
+	// cache results
 }
 
 function getBillDataFromPropublica(searchTerm,callback){	
@@ -85,8 +90,6 @@ function getBillSummary(billObj) {
 function handleBillClick(){
 	$('.results').on('click','.bill-request', function(e) {		
 		e.preventDefault();
-		PAGE_CACHE.results = $('.results').html();
-		// stores results page in variable so user can navigate back to it w/o making another external call
 		let bill_id = $(this).attr('id');		
 		displayBill(PAGE_CACHE[bill_id]);
 	});
@@ -210,8 +213,16 @@ function handleSearch(){
 	$('body').on('submit', '.search-form', e => {		
 		e.preventDefault();
 		const searchTerm = $('.search-query').val();
+		PAGE_CACHE.currentSearchTerm = searchTerm;
+		// stores search term for cacheing
 		if ($('.search-type').val() === "b"){
-			getBillDataFromPropublica(searchTerm,displayBillResults);
+			if (PAGE_CACHE.searchTermResults['b'].searchTerm) {
+				// checks to see if results are cached
+				displayBillResults(PAGE_CACHE.searchTermResults['b'].searchTerm);
+			} else {
+
+				getBillDataFromPropublica(searchTerm,displayBillResults);	
+			}			
 		} else {
 			handleRepSearch(searchTerm);
 		}

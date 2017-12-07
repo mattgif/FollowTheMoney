@@ -1,1 +1,6 @@
-const PAGE_CACHE = {}
+const PAGE_CACHE = {
+	searchTermResults: {
+		b: {},
+		r: {},
+	}
+}
