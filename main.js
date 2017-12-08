@@ -1,7 +1,7 @@
 const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo'
 const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search.json'
 const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee'
-const MAPLIGHT_BILL_POSITION_ENDPOINT = 'http://classic.maplight.org/services_open_api/map.bill_positions_v1.json'
+const MAPLIGHT_BILL_POSITION_ENDPOINT = 'https://classic.maplight.org/services_open_api/map.bill_positions_v1.json'
 
 const settings = {
 	// settings for how data gets displayed
@@ -90,6 +90,22 @@ function getBillSummary(billObj) {
 	} else {
 		return 'No summary available.';
 	}
+}
+
+function getOrgPositionsOnBillfromMaplight(billID,callback){	
+	let splitID = billID.split('-');
+	let session = splitID[1];
+	let prefixSplit = splitID[0].match(/[a-zA-Z]+|[0-9]+/g);
+	let prefix = prefixSplit[0];
+	let number = prefixSplit[1];	
+	query = {
+		apikey: MAPLIGHT_API_KEY,
+		jurisdition: 'us',		
+		number: number,
+		prefix: prefix,
+		session: session,			
+	};
+	$.getJSON(MAPLIGHT_BILL_POSITION_ENDPOINT,query,displayData)
 }
 
 function handleBillClick(){
