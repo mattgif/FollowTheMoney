@@ -1,6 +1,8 @@
 const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo'
 const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search.json'
 const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee'
+const MAPLIGHT_BILL_POSITION_ENDPOINT = 'http://classic.maplight.org/services_open_api/map.bill_positions_v1.json'
+
 const settings = {
 	// settings for how data gets displayed
 	titleLength: 125,
@@ -8,7 +10,9 @@ const settings = {
 }
 
 // bill functionality
-function displayBill(bill){	
+function displayBill(bill){
+	console.log(bill)
+	// debug -- remove!!
 	clearContent();		
 	let summary = getBillSummary(bill);
 	let datefield = relevantBillDateType(bill);
@@ -56,8 +60,8 @@ function displayBillResults(data){
 	PAGE_CACHE.results = $('.results').html();
 	// stores results page in variable so user can navigate back to it w/o making another external call
 	let searchTerm = PAGE_CACHE.currentSearchTerm;
-	if (!PAGE_CACHE.searchTermResults['b'].searchTerm) {
-		PAGE_CACHE.searchTermResults['b'].searchTerm = data;
+	if (!PAGE_CACHE.searchTermResults['b'][searchTerm]) {
+		PAGE_CACHE.searchTermResults['b'][searchTerm] = data;
 	}
 	// cache results
 }
@@ -75,6 +79,7 @@ function getBillDataFromPropublica(searchTerm,callback){
 		success: callback,
 	})
 }
+
 
 function getBillSummary(billObj) {
 	// apparently not all bills have summaries. there should be a law or something!
@@ -212,15 +217,14 @@ function handleReturnToResults(){
 function handleSearch(){
 	$('body').on('submit', '.search-form', e => {		
 		e.preventDefault();
-		const searchTerm = $('.search-query').val();
+		let searchTerm = $('.search-query').val();
 		PAGE_CACHE.currentSearchTerm = searchTerm;
-		// stores search term for cacheing
+		// stores search term for caching
 		if ($('.search-type').val() === "b"){
-			if (PAGE_CACHE.searchTermResults['b'].searchTerm) {
-				// checks to see if results are cached
-				displayBillResults(PAGE_CACHE.searchTermResults['b'].searchTerm);
-			} else {
-
+			if (PAGE_CACHE.searchTermResults['b'][searchTerm]) {
+				// checks to see if results are cached				
+				displayBillResults(PAGE_CACHE.searchTermResults['b'][searchTerm]);
+			} else {				
 				getBillDataFromPropublica(searchTerm,displayBillResults);	
 			}			
 		} else {
