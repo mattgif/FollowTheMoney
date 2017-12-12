@@ -6,8 +6,7 @@
 	<meta name="viewport" content="width=device-width">
 	<title>Follow the Money</title>
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" type="text/css" href="reset.css">
-	<link rel="stylesheet" type="text/css" href="grid.css">
+	<link rel="stylesheet" type="text/css" href="reset.css">	
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script
   		src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -26,6 +25,9 @@
 		<div class="results" aria-live="polite"></div>
 		<div class="detail-view" aria-live="polite"></div>
 	</main>
+
+
+	<!-- handlebars templates -->
 
 	<script type="text/x-handlebars-template" id="top-nav-template">
 		<h4 class="brand"><a href="#" onClick="displaySplash()">Follow the <i class="fa fa-money"></i></a></h4>
@@ -75,23 +77,35 @@
 			<div class="back-to-results">
 				<a href="#" class="back-to-results-link">&lt; Back to results</a>
 			</div>
-			<div class="bill-title">
+			<header class="bill-title">
 				<h1>{{title}}</h1>
-			</div>
-			<div class="date">
-				<p>{{date}}</p>
-			</div>
-			<div class="sponsor-tile">
-				<h2>Sponsor:</h2>
-				<p><a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{sponsor_state}})</a></p>
-				<div class="donors">
+			</header>
+			<section class="topmatter">
+				<div class="date">
+					<p>{{date}}</p>
 				</div>
-			</div>
-			<div class="bill-summary">
-				<h3>Summary:</h3>
-				<p>{{summary}}</p>
-			</div>
+				<div class="sponsor-tile">
+					<h2>Sponsor:</h2>
+					<p><a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{sponsor_state}})</a></p>
+					<div class="donors">
+					</div>
+				</div>
+				<div class="bill-summary">
+					<h3>Summary:</h3>
+					<p>{{summary}}</p>
+				</div>	
+			</section>
+			
+			<section class="charts">
+				<canvas class="support-oppose"></canvas>
+				<canvas class="support-sector-breakdown"></canvas>
+				<canvas class="oppose-sector-breakdown"></canvas>
+			</section>
 	</script>
+	<!--  -->
+		
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+	<script type="text/javascript" src="charting.js"></script>
 	<script type="text/javascript" src="pagecache.js"></script>
 	<script type="text/javascript" src="main.js"></script>
 </body>
