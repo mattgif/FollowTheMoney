@@ -96,10 +96,20 @@
 				</div>	
 			</section>
 			
-			<section class="charts">
-				<canvas class="support-oppose"></canvas>
-				<canvas class="support-sector-breakdown"></canvas>
-				<canvas class="oppose-sector-breakdown"></canvas>
+			<section class="charts" aria-live="polite">
+				<div class="charts-support-oppose">
+					<canvas class="support-oppose"></canvas>	
+				</div>
+				<div class=charts-sector-breakdown>
+					<div class="charts-support-sector-breakdown">
+						<canvas class="support-sector-breakdown"></canvas>	
+					</div>
+					<div class="charts-oppose-sector-breakdown">
+						<canvas class="oppose-sector-breakdown"></canvas>	
+					</div>
+					
+				</div>				
+				
 			</section>
 	</script>
 	<!--  -->

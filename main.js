@@ -10,8 +10,7 @@ const settings = {
 }
 
 // bill functionality
-function displayBill(bill) {
-	console.log(bill);
+function displayBill(bill) {	
 	clearContent();		
 	let summary = getBillSummary(bill);
 	let datefield = relevantBillDateType(bill);
@@ -23,7 +22,7 @@ function displayBill(bill) {
 		sponsor_uri: bill.sponsor_uri,
 		sponsor_title: bill.sponsor_title,
 		sponsor: bill.sponsor_name,
-		sponsor_part: bill.sponsor_party,
+		sponsor_party: bill.sponsor_party,
 		sponsor_state: bill.sponsor_state,
 		summary: summary,
 	}
@@ -34,6 +33,7 @@ function displayBill(bill) {
 
 	$('.detail-view').html(html);
 
+	createMapLightCharts(bill.bill_id);
 	handleReturnToResults();
 	// retrieves results info from cache when 'return' link is clicked
 }
@@ -62,7 +62,7 @@ function displayBillResults(data) {
 	if (!PAGE_CACHE.searchTermResults['b'][searchTerm]) {
 		PAGE_CACHE.searchTermResults['b'][searchTerm] = data;
 	}
-	// cache results
+	// cache results in case same search term is used again
 }
 
 function getBillDataFromPropublica(searchTerm,callback) {	
@@ -211,8 +211,7 @@ function getOrgNamesandCounts(sectorObject) {
 
 function getOrgPositionsOnBillfromMaplight(billID,callback) {
 	// takes propublica formatted bill_id, and returns json w/ 
-	// list of organizations that have taken a position on a bill
-	console.log('getOrgPositionsOnBillfromMaplight called')
+	// list of organizations that have taken a position on a bill	
 	useCORSAnywhere();
 	let splitID = billID.split('-');
 	let session = splitID[1];
