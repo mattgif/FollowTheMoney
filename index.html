@@ -22,8 +22,8 @@
 	<div class="splash-content"></div>	
 
 	<main role="main">
-		<div class="results" aria-live="polite"></div>
-		<div class="detail-view" aria-live="polite"></div>
+		<section class="results" aria-live="polite"></section>
+		<section class="detail-view" aria-live="polite"></section>
 	</main>
 
 
@@ -45,7 +45,7 @@
 	<script type="text/x-handlebars-template" id="splash-content-template">
 		<header role="banner">
 			<h1 class="maintitle"><span class="brand-first">Pol</span><span class="brand-mid">i</span><span class="brand-last">nfluence</span></h1>
-			<h2 class="subtitle">Trace the money behind legislation</h2>
+			<h2 class="subtitle">Find the special interests behind legislation</h2>
 		</header>
 
 		<section class="primary search" role="search">
@@ -61,13 +61,13 @@
 			</form>
 			<div class="instructions">
 				<p class="js-search-bill">Enter a topic (for example, "tax"), a bill name (e.g., "Tax Cuts and Jobs Act"), or a bill number (e.g., "H.R. 4614") to start tracing the influence behind legislation.</p>				
-				<p class="js-search-rep" hidden>Search for a legislator to find their major donors, legislation they've sponsored, and their voting record.</p>
+				<p class="js-search-rep" hidden>Enter a current legislator's name (e.g., 'Elizabeth Warren', 'Warren', or 'Elizabeth') to find legislation they've sponsored and their voting record.</p>
 			</div>
 		</section>
 	</script>
 	<script type="text/x-handlebars-template" id="bill_result_template">
-		<div class="results-bill-tile">
-			<h4 class="results-bill-title"><a href="#?{{bill_id}}" id="{{bill_id}}" class="bill-request">{{title}}</a></h4>
+		<div class="results-bill-tile">			
+			<h4><a href="#?{{bill_id}}" id="{{bill_id}}" class="bill-request">{{title}}</a></h4>
 			<p>Bill number: {{number}} | {{datefield}}</p>
 			<p>{{subject}}</p>
 			<p>Sponsor: <a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{state}})</a></p>
@@ -112,6 +112,19 @@
 				</div>				
 				
 			</section>
+	</script>
+	<script type="text/x-handlebars-template" id="legislator_result_template">
+		<div class="results-legislator-tile">
+			<section class="legislator-header">
+				<div class="legislator-image">
+					<img src="https://theunitedstates.io/images/congress/225x275/{{img_id}}.jpg">
+				</div>
+				<div class="legislator-name">
+					<a href="#" id="{{crp_id}}" class="rep-request">{{title}} {{name}} (<span class="affil-{{party}}">{{party}}</span>-{{state}})</a>
+				</div>	
+			</section>
+			<section class="sponsored-bills" aria-live="polite"></section>
+		</div>
 	</script>
 	<!--  -->
 		

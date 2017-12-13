@@ -14,7 +14,7 @@ function generateSectorSupOpChart(counts) {
                     labels: ["Support", "Oppose"],
                     datasets: [
                         {
-                            label: ["# of sectors"],
+                            label: ["# of special interest sectors"],
                             data: counts,
                             backgroundColor: [
                                 'rgb(80, 168, 60)',
@@ -58,7 +58,7 @@ function generateSectorBreakdownChart(sectors,counts,disposition) {
         // only creates chart if there's something to put in it
         targetElement.parent().html(
             `
-            We couldn't find any sectors with more than one organization ${adjective} this bill.
+            We couldn't find any special interest sectors with more than one group ${adjective} this bill.
             `
         )   
     } else {
@@ -68,7 +68,7 @@ function generateSectorBreakdownChart(sectors,counts,disposition) {
                 labels: sectors,
                 datasets: [
                     {
-                        label: `# of organizations in ${adjective} sectors`,
+                        label: `# of special interest groups ${adjective}`,
                         data: counts,
                         backgroundColor: bgColor,
                     },                  

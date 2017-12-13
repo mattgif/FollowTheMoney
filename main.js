@@ -1,9 +1,10 @@
-const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo'
-const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search.json'
-const PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/115/'
-const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee'
-const MAPLIGHT_BILL_POSITION_ENDPOINT = 'https://cors-anywhere.herokuapp.com/http://classic.maplight.org/services_open_api/map.bill_positions_v1.json'
+const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo';
+const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search.json';
+const PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/';
+const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee';
+const MAPLIGHT_BILL_POSITION_ENDPOINT = 'https://cors-anywhere.herokuapp.com/http://classic.maplight.org/services_open_api/map.bill_positions_v1.json';
 
+const CURRENT_CONGRESS = 115;
 const settings = {
 	// settings for how data gets displayed
 	titleLength: 125,
@@ -40,8 +41,7 @@ function displayBill(bill) {
 	// retrieves results info from cache when 'return' link is clicked
 }
 
-function displayBillResults(data) {
-	clearContent();
+function displayBillResults(data) {	
 	let resultCount = data.results[0].num_results;
 	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
 	if (resultCount > 0) {		
@@ -145,8 +145,50 @@ function truncate(title) {
 }
 
 // legislator functionality
-function displayLegislatorResults(matchingMembers){
+function displayLegislatorResults(matchingMembers) {
 	console.log(matchingMembers)
+	// debug -- remove!!	
+	let resultCount = matchingMembers.length;
+	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
+	if (resultCount > 0) {		
+		const results = matchingMembers.map((memberOfCongress) => renderLegislatorResults(memberOfCongress));
+		$('.results').html(results);
+	} else {
+		// no results were found
+		resultCountText = 'No results found';
+	}
+	$('.results').prepend(
+		`
+		<div class="results-count">
+			${resultCountText}
+		</div>
+		`
+	);
+	PAGE_CACHE.results = $('.results').html();
+	// stores results page in variable so user can navigate back to it w/o making another external call
+	let searchTerm = PAGE_CACHE.currentSearchTerm;
+	if (!PAGE_CACHE.searchTermResults['l'][searchTerm]) {
+		PAGE_CACHE.searchTermResults['l'][searchTerm] = matchingMembers;
+	}
+	// cache results in case same search term is used again
+
+
+}
+
+function renderLegislatorResults(memberOfCongress) {
+	let m = memberOfCongress;
+	const context = {
+		crp_id: m.crp_id,
+		img_id: m.id,
+		name: m.first_name + ' ' + m.last_name,
+		party: m.party,
+		state: m.state,
+		title: m.short_title,
+	};
+	let source = $('#legislator_result_template').html();
+	let template = Handlebars.compile(source);
+	let html = template(context);
+	return html;
 }
 
 function displayRep(data) {
@@ -159,15 +201,11 @@ function getMemberListFromPropublica(chamber,callback) {
 	$.ajax({		
 		headers: {'X-API-Key': PROPUBLICA_API_KEY},
 		// ProPub requires key in header
-		url: PROPUBLICA_MEMBER_ENDPOINT + chamber + '/members.json',
+		url: PROPUBLICA_MEMBER_ENDPOINT + CURRENT_CONGRESS + '/' + chamber + '/members.json',
 		datatype: 'jsonp',
 		type: 'GET',
 		success: callback,
 	})
-}
-
-function handleRepSearch(searchTerm) {	
-	searchForCongressMember(searchTerm.toLowerCase());
 }
 
 function handleRepClick(url) {
@@ -178,7 +216,7 @@ function handleRepClick(url) {
 	})
 }
 
-function populateCongressMemberInfo(searchTerm) {	
+function populateCongressMemberInfo() {	
 	// chains json requests to populate page_cache with propublica info about both houses
 	PAGE_CACHE.congress_populating = true;
 	// keeps track of whether API request has gone out and not yet returned
@@ -186,11 +224,10 @@ function populateCongressMemberInfo(searchTerm) {
 		// first get house info, and if successful cache data and grab senate info		
 		PAGE_CACHE.members['house'] = data.results[0].members;
 		getMemberListFromPropublica('senate',data => {
-			// grab senate info, cache, set flags indicating data has been cached, then search for searchTerm
+			// grab senate info, cache, set flags indicating data has been cached
 			PAGE_CACHE.members['senate'] = data.results[0].members;
 			PAGE_CACHE.congress_populated = true;
-			PAGE_CACHE.congress_populating = false;			
-			searchForCongressMember(searchTerm);
+			PAGE_CACHE.congress_populating = false;						
 		})
 	})
 }
@@ -206,7 +243,7 @@ function searchForCongressMember(searchTerm) {
 			return fullName.includes(searchTerm);
 		});		
 		displayLegislatorResults(matches);
-	} else if (PAGE_CACHE.congress_populating) {		
+	} else if (PAGE_CACHE.congress_populating) {			
 		// patience, try again in 2s
 		setTimeout(function(){
 		searchForCongressMember(searchTerm);	
@@ -214,6 +251,7 @@ function searchForCongressMember(searchTerm) {
 	} else {		
 		// request congress dump from ProPublica, then search
 		populateCongressMemberInfo(searchTerm);
+		searchForCongressMember(searchTerm);
 	}
 }
 
@@ -361,6 +399,7 @@ function getPropublicaDetails(url,callback) {
 }
 
 function handleReturnToResults() {
+	// invoked when user clicks "return" from a detail view page
 	$('.back-to-results-link').click(e => {
 		e.preventDefault();
 		clearContent();
@@ -370,11 +409,15 @@ function handleReturnToResults() {
 
 function handleSearch() {
 	$('body').on('submit', '.search-form', e => {		
-		e.preventDefault();
+		e.preventDefault();		
 		let searchTerm = $('.search-query').val();
+		let searchType = $('.search-type').val();
 		PAGE_CACHE.currentSearchTerm = searchTerm;
-		// stores search term for caching
-		if ($('.search-type').val() === "b") {
+		// stores search term for recall & caching
+		clearContent();
+		$('.results').html('<p class="searching">Searching...</p>');
+		if (searchType === "b") {
+			console.log('searching for bills')
 			if (PAGE_CACHE.searchTermResults['b'][searchTerm]) {
 				// checks to see if results are cached				
 				displayBillResults(PAGE_CACHE.searchTermResults['b'][searchTerm]);
@@ -382,7 +425,8 @@ function handleSearch() {
 				getBillDataFromPropublica(searchTerm,displayBillResults);	
 			}			
 		} else {
-			handleRepSearch(searchTerm);
+			console.log('searching for legislators')
+			searchForCongressMember(searchTerm.toLowerCase());
 		}
 	})
 }

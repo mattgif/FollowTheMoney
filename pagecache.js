@@ -3,7 +3,7 @@ const PAGE_CACHE = {
 	congress_populating: false,
 	searchTermResults: {
 		b: {},
-		r: {},
+		l: {},
 	},
 	maplight: {},
 	members: {},
