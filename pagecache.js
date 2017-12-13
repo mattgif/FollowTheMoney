@@ -1,9 +1,13 @@
 const PAGE_CACHE = {
+	congress_populated: false,
+	congress_populating: false,
 	searchTermResults: {
 		b: {},
 		r: {},
 	},
 	maplight: {},
+	members: {},
+
 }
 
 const categoryCodes = {

@@ -1,7 +1,8 @@
 const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo'
 const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search.json'
+const PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/115/'
 const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee'
-const MAPLIGHT_BILL_POSITION_ENDPOINT = 'http://classic.maplight.org/services_open_api/map.bill_positions_v1.json'
+const MAPLIGHT_BILL_POSITION_ENDPOINT = 'https://cors-anywhere.herokuapp.com/http://classic.maplight.org/services_open_api/map.bill_positions_v1.json'
 
 const settings = {
 	// settings for how data gets displayed
@@ -19,6 +20,7 @@ function displayBill(bill) {
 	let context = {
 		title: bill.title,
 		date: datefield,
+		sponsor_id: bill.sponsor_id,
 		sponsor_uri: bill.sponsor_uri,
 		sponsor_title: bill.sponsor_title,
 		sponsor: bill.sponsor_name,
@@ -143,9 +145,29 @@ function truncate(title) {
 }
 
 // legislator functionality
-function handleRepSearch(searchTerm) {
-	console.log('handleRepSearch called');
-	console.log('this feature not yet implemented');
+function displayLegislatorResults(matchingMembers){
+	console.log(matchingMembers)
+}
+
+function displayRep(data) {
+	console.log('displayRep called');
+	console.log(data);
+	// debug -- remove!!
+}
+
+function getMemberListFromPropublica(chamber,callback) {	
+	$.ajax({		
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: PROPUBLICA_MEMBER_ENDPOINT + chamber + '/members.json',
+		datatype: 'jsonp',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+function handleRepSearch(searchTerm) {	
+	searchForCongressMember(searchTerm.toLowerCase());
 }
 
 function handleRepClick(url) {
@@ -156,19 +178,43 @@ function handleRepClick(url) {
 	})
 }
 
-function displayRep(data) {
-	console.log('displayRep called');
-	console.log(data);
-	// debug -- remove!!
+function populateCongressMemberInfo(searchTerm) {	
+	// chains json requests to populate page_cache with propublica info about both houses
+	PAGE_CACHE.congress_populating = true;
+	// keeps track of whether API request has gone out and not yet returned
+	getMemberListFromPropublica('house',data => {
+		// first get house info, and if successful cache data and grab senate info		
+		PAGE_CACHE.members['house'] = data.results[0].members;
+		getMemberListFromPropublica('senate',data => {
+			// grab senate info, cache, set flags indicating data has been cached, then search for searchTerm
+			PAGE_CACHE.members['senate'] = data.results[0].members;
+			PAGE_CACHE.congress_populated = true;
+			PAGE_CACHE.congress_populating = false;			
+			searchForCongressMember(searchTerm);
+		})
+	})
 }
 
-function getRepCIDFromPropublica(data) {
-	console.log('getRepCIDFromPropublica called -- Rep retrieved')
-	console.log(data)
-	// debug -- remove!!
-	let cid = data.results[0].crp_id;
-	console.log("CID is: " + cid);
-	return cid;
+function searchForCongressMember(searchTerm) {
+	// returns array of congress member objects matching term
+	// if congress member info is not available in cache, requests data from ProPublica
+	if (PAGE_CACHE.congress_populated) {		
+		let congress = PAGE_CACHE.members.house.concat(PAGE_CACHE.members.senate);		
+		const matches = congress.filter(member => {			
+			const fullName = (member.first_name + ' ' + member.last_name).toLowerCase();
+			// console.log(`${fullName} includes ${searchTerm}:`,fullName.includes(searchTerm));
+			return fullName.includes(searchTerm);
+		});		
+		displayLegislatorResults(matches);
+	} else if (PAGE_CACHE.congress_populating) {		
+		// patience, try again in 2s
+		setTimeout(function(){
+		searchForCongressMember(searchTerm);	
+		},2000);
+	} else {		
+		// request congress dump from ProPublica, then search
+		populateCongressMemberInfo(searchTerm);
+	}
 }
 
 // mapLight organization functionality
@@ -211,8 +257,7 @@ function getOrgNamesandCounts(sectorObject) {
 
 function getOrgPositionsOnBillfromMaplight(billID,callback) {
 	// takes propublica formatted bill_id, and returns json w/ 
-	// list of organizations that have taken a position on a bill	
-	useCORSAnywhere();
+	// list of organizations that have taken a position on a bill		
 	let splitID = billID.split('-');
 	let session = splitID[1];
 	let prefixSplit = splitID[0].match(/[a-zA-Z]+|[0-9]+/g);
@@ -372,15 +417,6 @@ function showTopBarSearch() {
 	$('nav').prop('hidden',false);
 	let topBarSearch = $('#top-nav-template').html();
 	$('nav').html(topBarSearch);
-}
-
-function useCORSAnywhere() {
-	// uses cors-anywhere to get around CORS errors
-	jQuery.ajaxPrefilter(function(options) {	
-    	if (options.crossDomain && jQuery.support.cors) {
-        	options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
-    	}
-	});	
 }
 
 // page handling

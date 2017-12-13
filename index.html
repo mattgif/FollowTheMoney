@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="description" content="Trace the money behind legislation">
 	<meta name="viewport" content="width=device-width">
-	<title>Follow the Money</title>
+	<title>Polinfluence</title>
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="reset.css">	
 	<link rel="stylesheet" type="text/css" href="styles.css">
@@ -30,7 +30,7 @@
 	<!-- handlebars templates -->
 
 	<script type="text/x-handlebars-template" id="top-nav-template">
-		<h4 class="brand"><a href="#" onClick="displaySplash()">Follow the <i class="fa fa-money"></i></a></h4>
+		<h4 class="brand"><a href="#" onClick="displaySplash()"><span class="brand-first">Pol</span><span class="brand-mid">i</span><span class="brand-last">nfluence</span></a></h4>
 		<div class="nav search" role="search">
 			<form action="#" class="nav search-form">
 				<select class="nav search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
@@ -44,7 +44,7 @@
 	</script>
 	<script type="text/x-handlebars-template" id="splash-content-template">
 		<header role="banner">
-			<h1 class="maintitle">Follow the Money</h1>
+			<h1 class="maintitle"><span class="brand-first">Pol</span><span class="brand-mid">i</span><span class="brand-last">nfluence</span></h1>
 			<h2 class="subtitle">Trace the money behind legislation</h2>
 		</header>
 
@@ -60,7 +60,7 @@
 				<button type="submit">Search</button>
 			</form>
 			<div class="instructions">
-				<p class="js-search-bill">Enter a topic or bill name to start tracing the finances behind legislation.</p>
+				<p class="js-search-bill">Enter a topic (for example, "tax"), a bill name (e.g., "Tax Cuts and Jobs Act"), or a bill number (e.g., "H.R. 4614") to start tracing the influence behind legislation.</p>				
 				<p class="js-search-rep" hidden>Search for a legislator to find their major donors, legislation they've sponsored, and their voting record.</p>
 			</div>
 		</section>
@@ -85,6 +85,7 @@
 					<p>{{date}}</p>
 				</div>
 				<div class="sponsor-tile">
+					<img class="sponsor-image" src="https://theunitedstates.io/images/congress/225x275/{{sponsor_id}}.jpg">
 					<h2>Sponsor:</h2>
 					<p><a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{sponsor_state}})</a></p>
 					<div class="donors">

@@ -27,7 +27,8 @@ function generateSectorSupOpChart(counts) {
                     scales: {
                         yAxes: [{
                             ticks: {
-                                beginAtZero:true
+                                beginAtZero:true,
+                                stepSize: 1,
                             }
                         }]
                     }
