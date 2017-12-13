@@ -6,7 +6,9 @@ const PAGE_CACHE = {
 		l: {},
 	},
 	maplight: {},
-	members: {},
+	members: {
+		recent_bills: {},
+	},
 
 }
 

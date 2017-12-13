@@ -114,23 +114,28 @@
 			</section>
 	</script>
 	<script type="text/x-handlebars-template" id="legislator_result_template">
-		<div class="results-legislator-tile">
+		<div class="results-legislator-tile {{id}}">
 			<section class="legislator-header">
 				<div class="legislator-image">
-					<img src="https://theunitedstates.io/images/congress/225x275/{{img_id}}.jpg">
+					<img src="https://theunitedstates.io/images/congress/225x275/{{id}}.jpg">
 				</div>
 				<div class="legislator-name">
-					<a href="#" id="{{crp_id}}" class="rep-request">{{title}} {{name}} (<span class="affil-{{party}}">{{party}}</span>-{{state}})</a>
+					<a href="#" id="{{id}}" class="rep-request">{{title}} {{name}} (<span class="affil-{{party}}">{{party}}</span>-{{state}})</a>
 				</div>	
 			</section>
-			<section class="sponsored-bills" aria-live="polite"></section>
+			<section class="sponsored-bills">
+				<ul class="sponsored-bills-list" aria-live="polite"></ul>
+			</section>
 		</div>
 	</script>
-	<!--  -->
+
+	<!-- end handlebars templates -->
 		
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
 	<script type="text/javascript" src="charting.js"></script>
 	<script type="text/javascript" src="pagecache.js"></script>
+	<script type="text/javascript" src="bills.js"></script>
+	<script type="text/javascript" src="legislators.js"></script>
 	<script type="text/javascript" src="main.js"></script>
 </body>
 </html>

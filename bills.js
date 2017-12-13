@@ -1,0 +1,198 @@
+const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search.json';
+
+// bill functionality
+// depends on main.js
+
+function displayBill(bill) {	
+	clearContent();		
+	let summary = getBillSummary(bill);
+	let datefield = relevantBillDateType(bill);
+
+	// handlebars context dic and calls below
+	let context = {
+		title: bill.title,
+		date: datefield,
+		sponsor_id: bill.sponsor_id,
+		sponsor_uri: bill.sponsor_uri,
+		sponsor_title: bill.sponsor_title,
+		sponsor: bill.sponsor_name,
+		sponsor_party: bill.sponsor_party,
+		sponsor_state: bill.sponsor_state,
+		summary: summary,
+	}
+
+	let source = $('#bill_details_template').html();
+	let template = Handlebars.compile(source);
+	let html = template(context);
+
+	$('.detail-view').html(html);
+
+	createMapLightCharts(bill.bill_id);
+	handleReturnToResults();
+	// retrieves results info from cache when 'return' link is clicked
+}
+
+function displayBillResults(data) {	
+	let resultCount = data.results[0].num_results;
+	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
+	if (resultCount > 0) {		
+		const results = data.results[0].bills.map((item) => renderBillResults(item));
+		$('.results').html(results);
+	} else {
+		// no results were found
+		$('.results').html('')
+		resultCountText = 'No results found';
+	}
+	$('.results').prepend(
+		`
+		<div class="results-count">
+			${resultCountText}
+		</div>
+		`
+	);
+	PAGE_CACHE.results = $('.results').html();
+	// stores results page in variable so user can navigate back to it w/o making another external call
+	let searchTerm = PAGE_CACHE.currentSearchTerm;
+	if (!PAGE_CACHE.searchTermResults['b'][searchTerm]) {
+		PAGE_CACHE.searchTermResults['b'][searchTerm] = data;
+	}
+	// cache results in case same search term is used again
+}
+
+function getBillDataFromPropublica(searchTerm,callback) {	
+	$.ajax({		
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: PROPUBLICA_ENDPOINT,
+		data: {
+			query: searchTerm,
+		},
+		datatype: 'jsonp',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+
+function getBillSummary(billObj) {
+	// apparently not all bills have summaries. there should be a law or something!
+	if (billObj.summary_short) {		
+		return billObj.summary_short;
+	} else if (billObj.summary) {
+		return billObj.summary;
+	} else {
+		return 'No summary available.';
+	}
+}
+
+function handleBillClick() {
+	$('.results').on('click','.bill-request', function(e) {		
+		e.preventDefault();
+		let bill_id = $(this).attr('id');
+		if (PAGE_CACHE[bill_id]) {
+			displayBill(PAGE_CACHE[bill_id]);	
+		} else {
+			let cached_uri = bill_id + "_uri"
+			let url = PAGE_CACHE[cached_uri];
+			getSpecificBill(url,(data) => {
+
+			})
+		}
+		
+	});
+}
+
+define normalizeBillResults(fullBillObj) {
+	// propublica's bill data structure is different depending on how it's called; this puts a consistent entry in the cache
+	// input is the data object resulting from a specific bill request; caches a version closest to bill search result, 
+	// and returns that object
+	const normalizedBill = {
+		active: ,
+		bill_id: ,
+		bill_slug: ,
+		bill_type: ,
+		bill_uri: ,
+		committee_codes: ,
+		committees: ,
+		congressdotgov_url: ,
+		cosponsors: ,
+		cosponsors_by_party: ,
+		enacted: ,
+		govtrack_url: ,
+		gpo_pdf_uri: ,
+		house_passage: ,
+		introduced_date: ,
+		last_vote: ,
+		latest_major_action: ,
+		latest_major_action_date: ,
+		number: ,
+		primary_subject: ,
+		senate_passage: ,
+		short_title: ,
+		sponsor_id: ,
+		sponsor_name: ,
+		sponsor_party: ,
+		sponsor_state: ,
+		sponsor_title: ,
+		sponsor_uri: ,
+		subcommittee_codes: ,
+		summary: ,
+		summary_short: ,
+		title: ,
+		vetoed: ,
+	}
+
+}
+
+function getSpecificBill(url, callback) {
+	$.ajax({
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		url: url,
+		datatype: 'jsonp'
+		type: 'GET',
+		success: callback
+	});
+} 
+
+function renderBillResults(item) {
+	// returns html used to display bill results
+	const title = renderTitle(item);	
+	const context = {
+		bill_uri: item.bill_uri,		
+		datefield: relevantBillDateType(item),
+		bill_id: item.bill_id,
+		number: item.number, 
+		sponsor_uri: item.sponsor_uri,
+		sponsor: item.sponsor_name,
+		sponsor_title: item.sponsor_title,
+		sponsor_party: item.sponsor_party,
+		state: item.sponsor_state,
+		subject: (item.primary_subject) ? `Subject: ${item.primary_subject}` : '',
+		title: title,
+	}
+	PAGE_CACHE[context.bill_id] = item;
+	// caches bill data for retrieval
+	let source = $('#bill_result_template').html();
+	let template = Handlebars.compile(source);
+	let html = template(context);
+	return html
+}
+
+function relevantBillDateType(billObj) {
+	// returns str representing date enacted, if the bill was enacted, str reprenting introduction date otherwise
+	return (billObj.enacted) ? `Enacted: ${billObj.enacted}` : `Introduced: ${billObj.introduced_date}`;	
+}
+
+function renderTitle(billItem) {
+	// makes sure bill titles are reasonable length
+	let title = billItem.short_title ? billItem.short_title : billItem.title;
+	(title.length > settings.titleLength) ? truncate(title) : title;
+	return title;
+}
+
+function truncate(title) {
+	// truncates obscenely long titles at the last space before the 125th char
+	const snip = title.slice(0,settings.titleLength);
+	const finalSpace = snip.lastIndexOf(" ");
+	return snip.slice(0,finalSpace) + "…";
+}
