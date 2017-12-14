@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="description" content="Trace the money behind legislation">
-	<meta name="viewport" content="width=device-width">
-	<title>Polinfluence</title>
-	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" type="text/css" href="reset.css">	
-	<link rel="stylesheet" type="text/css" href="styles.css">
+	<meta charset="utf-8" />
+	<meta name="description" content="Trace the money behind legislation" />
+	<meta name="viewport" content="width=device-width" />
+	<title>polifluence</title>
+	<link href="https://fonts.googleapis.com/css?family=Raleway:400,800" rel="stylesheet"> 
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="reset.css" />	
+	<link rel="stylesheet" type="text/css" href="styles.css" />
 	<script
   		src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -37,46 +38,52 @@
 					<option value="b" selected="selected" aria-label="search for a bill">Bill</option>
 					<option value="l" aria-label="search for a legislator">Legislator</option>
 				</select>				
-				<input type="text" name="nav search-query" class="search-query" aria-label="search" placeholder="Search for a bill...">
+				<input type="text" name="nav search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />
 				<button type="nav submit"><i class="fa fa-search" aria-hidden="true"></i></button>			
 			</form>			
 		</div>		
 	</script>
 	<script type="text/x-handlebars-template" id="splash-content-template">
-		<header role="banner">
-			<h1 class="maintitle"><span class="brand-first">Pol</span><span class="brand-mid">i</span><span class="brand-last">nfluence</span></h1>
-			<h2 class="subtitle">Find the special interests behind legislation</h2>
+		<header role="banner" class="splash-banner">
+			<h1 class="maintitle"><span class="brand-first">pol</span><span class="brand-mid">i</span><span class="brand-last">fluence</span></h1>
+			<h2 class="subtitle">discover the people and special interests behind legislation</h2>
 		</header>
 
-		<section class="primary search" role="search">
+		<section class="primary-search" role="search">
 			<form action="#" class="search-form">
-				<label for="search-type" class="search-type-label">I want to search for </label>
-				<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
-					<option value="b" selected="selected">a bill</option>
-					<option value="l">a legislator</option>
-				</select>
-				<label for="search-query" class="js-search-icon"><i class="fa fa-search" aria-hidden="true"></i></label>
-				<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill...">
+				<div class="type-selector">
+					<label for="search-type" class="search-type-label">I want to search for </label>
+					<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
+						<option value="b" selected="selected">a bill</option>
+						<option value="l">a legislator</option>
+					</select>	
+				</div>
+				<div class="primary-search-field">
+					<div class="label-wrapper">
+						<label for="search-query" class="js-search-icon"><i class="fa fa-search" aria-hidden="true"></i></label>
+						<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />		
+					</div>					
+				</div>				
 				<button type="submit">Search</button>
 			</form>
 			<div class="instructions">
-				<p class="js-search-bill">Enter a topic (for example, "tax"), a bill name (e.g., "Tax Cuts and Jobs Act"), or a bill number (e.g., "H.R. 4614") to start tracing the influence behind legislation.</p>				
+				<p class="js-search-bill">Enter a topic (for example, "tax"), a bill name (e.g., "Tax Cuts and Jobs Act"), or a bill number (e.g., "H.R. 4614") to start tracing the political influence behind legislation.</p>				
 				<p class="js-search-rep" hidden>Enter a current legislator's name (e.g., 'Elizabeth Warren', 'Warren', or 'Elizabeth') to find legislation they've sponsored and their voting record.</p>
-			</div>
+			</divn>
 		</section>
 	</script>
 	<script type="text/x-handlebars-template" id="bill_result_template">
 		<div class="results-bill-tile">			
-			<h4><a href="#?{{bill_id}}" id="{{bill_id}}" class="bill-request">{{title}}</a></h4>
+			<h4><a href="#?type=b&id={{bill_id}}" id="{{bill_id}}" class="bill-request">{{title}}</a></h4>
 			<p>Bill number: {{number}} | {{datefield}}</p>
 			<p>{{subject}}</p>
-			<p>Sponsor: <a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{state}})</a></p>
+			<p>Sponsor: <a href="#?type=l&id={{sponsor_id}}" id={{sponsor_id}} class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{state}})</a></p>
 		</div>
 	</script>
 	<script type="text/x-handlebars-template" id="bill_details_template">
-			<div class="back-to-results">
+			<header class="back-to-results">
 				<a href="#" class="back-to-results-link">&lt; Back to results</a>
-			</div>
+			</header>
 			<header class="bill-title">
 				<h1>{{title}}</h1>
 			</header>
@@ -85,9 +92,9 @@
 					<p>{{date}}</p>
 				</div>
 				<div class="sponsor-tile">
-					<img class="sponsor-image" src="https://theunitedstates.io/images/congress/225x275/{{sponsor_id}}.jpg">
+					<a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request"><img class="sponsor-image" src="https://theunitedstates.io/images/congress/225x275/{{sponsor_id}}.jpg" alt="{{sponsor}} official portrait" onerror="this.style.display='none'"></a>
 					<h2>Sponsor:</h2>
-					<p><a href="{{sponsor_uri}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{sponsor_state}})</a></p>
+					<p><a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{sponsor_state}})</a></p>
 					<div class="donors">
 					</div>
 				</div>
@@ -107,25 +114,61 @@
 					</div>
 					<div class="charts-oppose-sector-breakdown">
 						<canvas class="oppose-sector-breakdown"></canvas>	
-					</div>
-					
+					</div>					
 				</div>				
-				
 			</section>
 	</script>
 	<script type="text/x-handlebars-template" id="legislator_result_template">
 		<div class="results-legislator-tile {{id}}">
 			<section class="legislator-header">
 				<div class="legislator-image">
-					<img src="https://theunitedstates.io/images/congress/225x275/{{id}}.jpg">
+					<a href="#?type=l&id={{id}}" id="{{id}}" class="rep-request"><img src="https://theunitedstates.io/images/congress/225x275/{{id}}.jpg" alt="{{title}} {{name}} official portrait" onerror="this.style.display='none'"></a>
 				</div>
 				<div class="legislator-name">
-					<a href="#" id="{{id}}" class="rep-request">{{title}} {{name}} (<span class="affil-{{party}}">{{party}}</span>-{{state}})</a>
+					<a href="#?type=l&id={{id}}" id="{{id}}" class="rep-request">{{title}} {{name}} (<span class="affil-{{party}}">{{party}}</span>-{{state}})</a>
 				</div>	
 			</section>
 			<section class="sponsored-bills">
 				<ul class="sponsored-bills-list" aria-live="polite"></ul>
 			</section>
+		</div>
+	</script>
+	<script type="text/x-handlebars-template" id="legislator_details_template">
+		<header class="back-to-results">
+			<a href="#" class="back-to-results-link">&lt; Back to results</a>
+		</header>		
+		<div class="results-legislator-tile {{id}}">
+			<section class="legislator-header">
+				<div class="legislator-image">
+					<img src="https://theunitedstates.io/images/congress/225x275/{{id}}.jpg" alt="{{title}} {{name}} official portrait" onerror="this.style.display='none'">
+				</div>
+				<div class="legislator-name">
+					<h1>{{title}} {{name}}</h1>
+					<h3>(<span class="affil-{{party}}">{{party}}</span>-{{state}})</h3>
+				</div>
+				<div class="legislator-contact-info">
+					<a href="{{url}}">Official Website</a>
+					<p>Phone: {{phone}}</p>					
+					<p>{{office}}</p>
+				</div>
+			</section>
+			<section class="charts">
+				<div class="charts-missed-votes">
+					<canvas class="missed-votes"></canvas>	
+				</div>
+				<div class="charts-party-loyalty">
+					<canvas class="party-loyalty"></canvas>
+				</div>
+				
+
+			</section>
+			<section class="sponsored-bills">
+				<ul class="sponsored-bills-list" aria-live="polite"></ul>
+			</section>
+			<section class="co-sponsored-bills">
+				<ul class="co-sponsored-bills-list" aria-live="polite"></ul>
+			</section>
+			<section class="vote-positions" class="vote-positions" aria-live="polite"></section>
 		</div>
 	</script>
 

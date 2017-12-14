@@ -85,72 +85,33 @@ function getBillSummary(billObj) {
 	}
 }
 
-function handleBillClick() {
-	$('.results').on('click','.bill-request', function(e) {		
+function handleBillClick() {	
+	$('.results').on('click','.bill-request', function(e) {				
 		e.preventDefault();
 		let bill_id = $(this).attr('id');
 		if (PAGE_CACHE[bill_id]) {
 			displayBill(PAGE_CACHE[bill_id]);	
-		} else {
+		} else {			
 			let cached_uri = bill_id + "_uri"
-			let url = PAGE_CACHE[cached_uri];
-			getSpecificBill(url,(data) => {
-
+			let url = PAGE_CACHE[cached_uri];			
+			getSpecificBill(url,(data) => {				
+				let bill = data.results[0];
+				PAGE_CACHE[bill.bill_id] = bill;
+				PAGE_CACHE[bill.bill_id].sponsor_name = bill.sponsor;
+				// Propublica returns one key when requesting a specific bill, and the other when getting serach results
+				displayBill(PAGE_CACHE[bill.bill_id])
 			})
-		}
-		
+		};		
 	});
 }
 
-define normalizeBillResults(fullBillObj) {
-	// propublica's bill data structure is different depending on how it's called; this puts a consistent entry in the cache
-	// input is the data object resulting from a specific bill request; caches a version closest to bill search result, 
-	// and returns that object
-	const normalizedBill = {
-		active: ,
-		bill_id: ,
-		bill_slug: ,
-		bill_type: ,
-		bill_uri: ,
-		committee_codes: ,
-		committees: ,
-		congressdotgov_url: ,
-		cosponsors: ,
-		cosponsors_by_party: ,
-		enacted: ,
-		govtrack_url: ,
-		gpo_pdf_uri: ,
-		house_passage: ,
-		introduced_date: ,
-		last_vote: ,
-		latest_major_action: ,
-		latest_major_action_date: ,
-		number: ,
-		primary_subject: ,
-		senate_passage: ,
-		short_title: ,
-		sponsor_id: ,
-		sponsor_name: ,
-		sponsor_party: ,
-		sponsor_state: ,
-		sponsor_title: ,
-		sponsor_uri: ,
-		subcommittee_codes: ,
-		summary: ,
-		summary_short: ,
-		title: ,
-		vetoed: ,
-	}
-
-}
-
-function getSpecificBill(url, callback) {
+function getSpecificBill(url, callback) {	
 	$.ajax({
 		headers: {'X-API-Key': PROPUBLICA_API_KEY},
 		url: url,
-		datatype: 'jsonp'
+		datatype: 'json',
 		type: 'GET',
-		success: callback
+		success: callback,
 	});
 } 
 
@@ -163,6 +124,7 @@ function renderBillResults(item) {
 		bill_id: item.bill_id,
 		number: item.number, 
 		sponsor_uri: item.sponsor_uri,
+		sponsor_id: item.sponsor_id,
 		sponsor: item.sponsor_name,
 		sponsor_title: item.sponsor_title,
 		sponsor_party: item.sponsor_party,

@@ -8,6 +8,7 @@ const PAGE_CACHE = {
 	maplight: {},
 	members: {
 		recent_bills: {},
+		by_id: {},
 	},
 
 }

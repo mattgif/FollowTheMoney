@@ -1,5 +1,87 @@
-body {
-	padding: 0 5px;
+body {	
+	background: #f6f4ef;
+	font-family: Calibre,sans-serif;
+	box-sizing: border-box;
+}
+
+h1, .search-form {
+	color: #21409a;
+}
+
+.splash-banner {
+	text-align: center;
+	margin-bottom: 35px;	
+}
+
+.splash-content, main {
+	max-width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.maintitle {
+	margin-top: 10%;
+	margin-bottom: 30px;	
+	font-size: 3em;	
+	font-family: 'Raleway', sans-serif;	
+}
+
+.brand-first {
+	color: #21409a;
+}
+
+.brand-mid {
+	color: #FF7350;
+}
+
+.brand-last {
+	color: #333;
+}
+
+.primary-search {
+	margin-right: 8px;
+	margin-left: 8px;
+	position: relative;
+}
+
+.type-selector {
+	text-align: center;
+	margin-bottom: 10px;
+	width: 100%;
+}
+.primary-search form {
+	font-size: 1.25em;
+	line-height: 2em;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.primary-search select, .primary-search input {
+	height: 45px;
+	font-size: 1em;
+}
+
+.search-query {	
+	padding-left: 35px;
+	width: 90%;	
+}
+
+.label-wrapper {
+	width: 100%;
+	max-width: 750px;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+}
+.primary-search-field {
+	width: 100%;
+}
+
+.primary-search-field label {	
+	position: absolute;
+	z-index: 1;
+	left: 5px;
+	top: 5px;
 }
 
 .affil-R {

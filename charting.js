@@ -10,20 +10,25 @@ function generateSectorSupOpChart(counts) {
         } else {
             let chart = new Chart (supportOpposeChart, {
                 type: 'bar',
-                data: {
-                    labels: ["Support", "Oppose"],
-                    datasets: [
-                        {
-                            label: ["# of special interest sectors"],
-                            data: counts,
-                            backgroundColor: [
-                                'rgb(80, 168, 60)',
-                                'rgb(145, 35, 27)',                        
-                            ],
-                        },
+                data: {                    
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: [
+                            'rgb(80, 168, 60)',
+                            'rgb(145, 35, 27)',                        
+                        ],
+                    }],
+                    labels: [
+                        "Support", 
+                        "Oppose"
                     ],
                 },
                 options: {
+                    title: {
+                        display: true,
+                        text: "# of special interest sectors supporting/opposing",
+                        position: top,
+                    },
                     scales: {
                         yAxes: [{
                             ticks: {
@@ -31,6 +36,9 @@ function generateSectorSupOpChart(counts) {
                                 stepSize: 1,
                             }
                         }]
+                    },
+                    legend: {
+                        display: false,
                     }
                 }
             })
@@ -67,14 +75,18 @@ function generateSectorBreakdownChart(sectors,counts,disposition) {
             data: {
                 labels: sectors,
                 datasets: [
-                    {
-                        label: `# of special interest groups ${adjective}`,
+                    {                        
                         data: counts,
                         backgroundColor: bgColor,
                     },                  
                 ],
             },
             options: {
+                title: {
+                    display: true,
+                    text: `# of special interest groups ${adjective}`,
+                    position: top,
+                },
                 scales: {       
                     xAxes: [{                    
                         ticks: {
@@ -87,9 +99,64 @@ function generateSectorBreakdownChart(sectors,counts,disposition) {
                             stepSize: 1,
                         }
                     }]
-                }
+                },
             },
         })
-    }
-    
+    }    
+}
+
+function generateMissedVoteChart(missed_votes_pct) {    
+    const missedVotes = round(missed_votes_pct,2);
+    const presentVotes = round((100 - missed_votes_pct),2);
+    const missedVoteChart = $('.missed-votes')
+    let chart = new Chart (missedVoteChart, {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: [missedVotes,presentVotes],
+                backgroundColor: ['#ffd154','#a454ff']
+            }],
+            labels: [
+                missedVotes + '% missed',
+                presentVotes + '% present',
+            ],
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Missed vote percentage'
+            },
+        }
+    })
+}
+
+function generatePartyLoyaltyChart(votes_with_party_pct) {
+    const partyVotes = round(votes_with_party_pct,2);
+    const dissentingVotes = round((100 - partyVotes),2);
+    const partyLoyaltyChart = $('.party-loyalty')
+    let chart = new Chart (partyLoyaltyChart, {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: [partyVotes,dissentingVotes],
+                backgroundColor: ['#2e4aff','#ff902e'],
+            }],
+            labels: [
+                partyVotes + '% of votes with party',
+                dissentingVotes + '% of votes across party line',
+            ],
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Percentage of votes with party',
+                position: 'top',
+            },
+        },
+    })
+
+}
+
+function round(value,decimals) {
+    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }

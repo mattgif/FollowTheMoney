@@ -45,8 +45,8 @@ function getPropublicaDetails(url,callback) {
 
 function handleReturnToResults() {
 	// invoked when user clicks "return" from a detail view page
-	$('.back-to-results-link').click(e => {
-		e.preventDefault();
+	$('.back-to-results-link').click(e => {		
+		e.preventDefault();		
 		clearContent();
 		$('.results').html(PAGE_CACHE.results);
 	});
@@ -90,6 +90,11 @@ function handleSearchTypeChange() {
 	});
 }
 
+function hideBrokenImages() {
+	$('body').on('error','img',function() {
+		alert("Image error")
+	})
+}
 function hideSplash() {
 	settings.splashDisplayed = 0;
 	$('.splash-content').prop('hidden',true);
@@ -218,8 +223,8 @@ function createMapLightCharts(billID) {
 // page handling
 function pageHandler() {
 	// runs listeners for page
-
 	displaySplash();
+	hideBrokenImages()
 	handleSearch();
 	handleRepClick();
 	handleBillClick();
