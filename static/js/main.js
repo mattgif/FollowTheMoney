@@ -71,6 +71,7 @@ function handleSearch() {
 		} else {			
 			searchForCongressMember(searchTerm.toLowerCase());
 		}
+		$('.search-query').val('');
 	})
 }
 
@@ -92,6 +93,49 @@ function handleSearchTypeChange() {
 
 function toggleSearchModal() {
 	$('.search-modal').toggleClass('hidden');
+	if (PAGE_CACHE.modal_open) {
+		$('.opensearch').html(`
+			<i class="fa fa-search"></i>
+		`)
+		PAGE_CACHE.modal_open = false;
+	} else {
+		$('.opensearch').html(`
+			<i class="fa fa-times"></i>
+		`)
+		PAGE_CACHE.modal_open = true;
+		$('body').keydown(e => {
+			// hide modal on escape press
+			if (e.keyCode==27){
+				toggleSearchModal()	
+			}			
+		})
+		handleModalNav(0);
+	}
+}
+
+function handleModalNav(page){		
+	if (page === 0) {
+		$('.js-modal-back').hide();
+		$('.search-type-select').show();
+		$('.search-term-box').hide();		
+		$('.js-modal-next').show();
+		$('.js-modal-next').click(e => {
+			e.stopPropagation();
+			handleModalNav(1);
+		})
+	} else {
+		$('.js-modal-back').show();
+		$('.search-type-select').hide();
+		$('.search-term-box').show();		
+		$('.js-modal-next').hide();		
+		$('.js-modal-back').click(e => {
+			e.stopPropagation();
+			handleModalNav(0);
+		})
+		$('.submit-button').click(function() {
+			toggleSearchModal();
+		})
+	} 
 }
 
 function handleModalSearchClick() {
@@ -99,18 +143,7 @@ function handleModalSearchClick() {
 	$('body').on('click','.js-opensearch', e => {
 		e.preventDefault;
 		console.log('modalSearchClicked')
-		toggleSearchModal();
-		if (PAGE_CACHE.modal_open) {
-			$('.opensearch').html(`
-				<i class="fa fa-search" aria-hidden="false"></i>
-			`)
-			PAGE_CACHE.modal_open = false;
-		} else {
-			$('.opensearch').html(`
-				<i class="fa fa-times" aria-hidden="true"></i>
-			`)
-			PAGE_CACHE.modal_open = true;			
-		}
+		toggleSearchModal();		
 	})
 }
 

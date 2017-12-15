@@ -29,31 +29,39 @@
 
 	<section class="search-modal hidden">
 		<div class="search" role="search">
-			<button class="modal-back">&lt;</button>
-			<form action="#" class="search-form searchdisplay">
-				<fieldset name="search-type-select">
-					<legend>I want to search for a...</legend>
-					<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">	
-						<option value="b" selected="selected" aria-label="search for a bill">bill</option>
-						<option value="l" aria-label="search for a legislator">legislator</option>
-					</select>				
+			<div class="button-wrapper">
+				<button class="modal-button js-modal-back">&lt;</button>	
+			</div>			
+			<form action="#" class="search-form">
+				<fieldset name="search-type-select" class="search-type-select">
+					<legend>Search for a</legend>
+					<div class="select">
+						<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">	
+							<option value="b" selected="selected" aria-label="search for a bill">bill</option>
+							<option value="l" aria-label="search for a legislator">legislator</option>
+						</select>					
+					</div>
+					
 				</fieldset>
-				<fieldset name="search-term-box" hidden>
-					<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />	
+				<fieldset name="search-term-box" class="search-term-box">
+					<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search polifluence..." />	
+					<button class="submit-button" type="submit">Search</button>
 				</fieldset>
-				<fieldset name="submit-button-box" hidden>
-					<button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>				
-				</fieldset>				
-			</form>	
-			<button class="modal-next">&gt;</button>		
+			</form>
+			<div class="button-wrapper">
+				<button class="modal-button js-modal-next">&gt;</button>	
+			</div>
+			
 		</div>		
 	</section>
 	<!-- handlebars templates -->
 
-	<script type="text/x-handlebars-template" id="top-nav-template">
+	<script type="text/x-handlebars-template" id="top-nav-template">		
 		<div class="top-nav-bar">
-			<h4 class="nav brand"><a href="#" onClick="displaySplash()"><span class="brand-first">pol</span><span class="brand-mid">i</span><span class="brand-last">fluence</span></a></h4>
-			<button class="opensearch js-opensearch"><i class="fa fa-search" aria-hidden="false"></i></button>	
+			<div class="top-nav-bar-inner">
+				<h4 class="nav brand"><a href="#" onClick="displaySplash()"><span class="brand-first">pol</span><span class="brand-mid">i</span><span class="brand-last">fluence</span></a></h4>
+				<button class="opensearch js-opensearch"><i class="fa fa-search" aria-hidden="false"></i></button>	
+			</div>			
 		</div>
 	</script>
 	<script type="text/x-handlebars-template" id="splash-content-template">
@@ -66,10 +74,13 @@
 			<form action="#" class="search-form">
 				<div class="type-selector">
 					<label for="search-type" class="search-type-label">I want to search for a</label>
-					<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
-						<option value="b" selected="selected">bill</option>
-						<option value="l">legislator</option>
-					</select>	
+					<div class="select">
+						<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
+							<option value="b" selected="selected">bill</option>
+							<option value="l">legislator</option>
+						</select>		
+					</div>
+					
 				</div>
 				<div class="primary-search-field">
 					<div class="label-wrapper">
