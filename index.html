@@ -31,17 +31,19 @@
 	<!-- handlebars templates -->
 
 	<script type="text/x-handlebars-template" id="top-nav-template">
-		<h4 class="brand"><a href="#" onClick="displaySplash()"><span class="brand-first">Pol</span><span class="brand-mid">i</span><span class="brand-last">nfluence</span></a></h4>
-		<div class="nav search" role="search">
-			<form action="#" class="nav search-form">
-				<select class="nav search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
-					<option value="b" selected="selected" aria-label="search for a bill">Bill</option>
-					<option value="l" aria-label="search for a legislator">Legislator</option>
-				</select>				
-				<input type="text" name="nav search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />
-				<button type="nav submit"><i class="fa fa-search" aria-hidden="true"></i></button>			
-			</form>			
-		</div>		
+		<div class="top-nav-bar">
+			<h4 class="nav brand"><a href="#" onClick="displaySplash()"><span class="brand-first">pol</span><span class="brand-mid">i</span><span class="brand-last">fluence</span></a></h4>
+			<div class="nav search" role="search">
+				<form action="#" class="nav search-form">
+					<select class="nav search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
+						<option value="b" selected="selected" aria-label="search for a bill">Bill</option>
+						<option value="l" aria-label="search for a legislator">Legislator</option>
+					</select>				
+					<input type="text" name="nav search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />
+					<button type="nav submit"><i class="fa fa-search" aria-hidden="true"></i></button>			
+				</form>			
+			</div>		
+		</div>
 	</script>
 	<script type="text/x-handlebars-template" id="splash-content-template">
 		<header role="banner" class="splash-banner">
@@ -61,14 +63,25 @@
 				<div class="primary-search-field">
 					<div class="label-wrapper">
 						<label for="search-query" class="js-search-icon"><i class="fa fa-search" aria-hidden="true"></i></label>
-						<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />		
+						<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />
+						<button type="submit">Search</button>
 					</div>					
 				</div>				
-				<button type="submit">Search</button>
+				
 			</form>
 			<div class="instructions">
-				<p class="js-search-bill">Enter a topic (for example, "tax"), a bill name (e.g., "Tax Cuts and Jobs Act"), or a bill number (e.g., "H.R. 4614") to start tracing the political influence behind legislation.</p>				
-				<p class="js-search-rep" hidden>Enter a current legislator's name (e.g., 'Elizabeth Warren', 'Warren', or 'Elizabeth') to find legislation they've sponsored and their voting record.</p>
+				<div class="js-search-bill">
+					<p >Enter a topic, a bill name, or a bill number to start tracing the political influence behind legislation. Try:</p>					
+					<ul>						
+						<li>Net neutrality</li>
+						<li>H.R.4382</li>
+						<li>Save Net Neutrality Act of 2017</li>
+					</ul>
+				</div>
+				<div class="js-search-rep" hidden>
+					<p>Enter a current legislator's name to find legislation they've sponsored and their voting record.</p>	
+				</div>
+				
 			</divn>
 		</section>
 	</script>
