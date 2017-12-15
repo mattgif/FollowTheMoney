@@ -7,14 +7,14 @@
 	<title>polifluence</title>
 	<link href="https://fonts.googleapis.com/css?family=Raleway:400,800" rel="stylesheet"> 
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-	<link rel="stylesheet" type="text/css" href="reset.css" />	
-	<link rel="stylesheet" type="text/css" href="styles.css" />
+	<link rel="stylesheet" type="text/css" href="static/css/reset.css" />	
+	<link rel="stylesheet" type="text/css" href="static/css/styles.css" />
 	<script
   		src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   		crossorigin="anonymous">
   	</script>
-  	<script type="text/javascript" src="handlebars-v4.0.11.js"></script>
+  	<script type="text/javascript" src="static/js/handlebars-v4.0.11.js"></script>
 </head>
 <body>
 	<nav role="navigation" hidden>	
@@ -31,12 +31,19 @@
 		<div class="search" role="search">
 			<button class="modal-back">&lt;</button>
 			<form action="#" class="search-form searchdisplay">
-				<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
-					<option value="b" selected="selected" aria-label="search for a bill">Bill search</option>
-					<option value="l" aria-label="search for a legislator">Legislator search</option>
-				</select>				
-				<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." hidden/>
-				<button type="submit" hidden><i class="fa fa-search" aria-hidden="true"></i></button>			
+				<fieldset name="search-type-select">
+					<legend>I want to search for a...</legend>
+					<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">	
+						<option value="b" selected="selected" aria-label="search for a bill">bill</option>
+						<option value="l" aria-label="search for a legislator">legislator</option>
+					</select>				
+				</fieldset>
+				<fieldset name="search-term-box" hidden>
+					<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />	
+				</fieldset>
+				<fieldset name="submit-button-box" hidden>
+					<button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>				
+				</fieldset>				
 			</form>	
 			<button class="modal-next">&gt;</button>		
 		</div>		
@@ -58,10 +65,10 @@
 		<section class="primary-search" role="search">
 			<form action="#" class="search-form">
 				<div class="type-selector">
-					<label for="search-type" class="search-type-label">I want to search for </label>
+					<label for="search-type" class="search-type-label">I want to search for a</label>
 					<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
-						<option value="b" selected="selected">a bill</option>
-						<option value="l">a legislator</option>
+						<option value="b" selected="selected">bill</option>
+						<option value="l">legislator</option>
 					</select>	
 				</div>
 				<div class="primary-search-field">
@@ -192,10 +199,10 @@
 	<!-- end handlebars templates -->
 		
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-	<script type="text/javascript" src="charting.js"></script>
-	<script type="text/javascript" src="pagecache.js"></script>
-	<script type="text/javascript" src="bills.js"></script>
-	<script type="text/javascript" src="legislators.js"></script>
-	<script type="text/javascript" src="main.js"></script>
+	<script type="text/javascript" src="static/js/charting.js"></script>
+	<script type="text/javascript" src="static/js/pagecache.js"></script>
+	<script type="text/javascript" src="static/js/bills.js"></script>
+	<script type="text/javascript" src="static/js/legislators.js"></script>
+	<script type="text/javascript" src="static/js/main.js"></script>
 </body>
 </html>

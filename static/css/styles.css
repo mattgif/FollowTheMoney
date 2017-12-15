@@ -22,8 +22,15 @@ a {
 	top: 40px;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0,0,0,.5);
+	background-color: rgba(0,0,0,.3);
 	z-index: 1;
+}
+
+.search-modal .search {
+	height: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .top-nav-bar {
@@ -114,11 +121,15 @@ a {
 }
 
 .splash-content #search-type {
+	
 	padding-right: 5px;
 	text-align: center;
-	background-color: #7b87ad;
-	border: 0;
+	background: transparent;
+	border: 2px solid #21409a;
 	color: #333;
+	font-size: 1em;
+	height: 30px;
+	border-radius: 4px;
 }
 
 .splash-content .primary-search form {
@@ -130,7 +141,7 @@ a {
 	margin-bottom: 20px;
 }
 
-.splash-content .primary-search select, .splash-content .primary-search input {
+.splash-content .primary-search input {
 	height: 45px;
 	font-size: 1em;	
 	
