@@ -26,8 +26,7 @@ function generateSectorSupOpChart(counts) {
                 options: {
                     title: {
                         display: true,
-                        text: "# of special interest sectors supporting/opposing",
-                        position: top,
+                        text: "# of special interest sectors supporting/opposing",                        
                     },
                     scales: {
                         yAxes: [{
@@ -64,11 +63,7 @@ function generateSectorBreakdownChart(sectors,counts,disposition) {
     }
     if (counts.reduce((a,b) => a+b,0) === 0) {
         // only creates chart if there's something to put in it
-        targetElement.parent().html(
-            `
-            We couldn't find any special interest sectors with more than one group ${adjective} this bill.
-            `
-        )   
+        targetElement.parent().html('')   
     } else {
         let chart = new Chart (targetElement, {
             type: 'horizontalBar',
@@ -84,8 +79,7 @@ function generateSectorBreakdownChart(sectors,counts,disposition) {
             options: {
                 title: {
                     display: true,
-                    text: `# of special interest groups ${adjective}`,
-                    position: top,
+                    text: `# of special interest groups ${adjective}`,                    
                 },
                 scales: {       
                     xAxes: [{                    
@@ -100,6 +94,9 @@ function generateSectorBreakdownChart(sectors,counts,disposition) {
                         }
                     }]
                 },
+                legend: {
+                    display: false,
+                }
             },
         })
     }    

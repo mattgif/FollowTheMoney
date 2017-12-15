@@ -117,7 +117,7 @@
 	</script>
 	<script type="text/x-handlebars-template" id="bill_details_template">
 			<header class="back-to-results">
-				<a href="#" class="back-to-results-link">&lt; Back to results</a>
+				<a href="#" class="back-to-results-link"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to results</a>
 			</header>
 			<header class="bill-title">
 				<h1>{{title}}</h1>
@@ -127,19 +127,22 @@
 					<p>{{date}}</p>
 				</div>
 				<div class="sponsor-tile">
-					<a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request"><img class="sponsor-image" src="https://theunitedstates.io/images/congress/225x275/{{sponsor_id}}.jpg" alt="{{sponsor}} official portrait" onerror="this.style.display='none'"></a>
+					<div class="sponsor-image-tile">
+						<a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request"><img class="sponsor-image" src="https://theunitedstates.io/images/congress/225x275/{{sponsor_id}}.jpg" alt="{{sponsor}} official portrait" onerror="this.style.display='none'"></a>	
+					</div>					
 					<h2>Sponsor:</h2>
 					<p><a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{sponsor_state}})</a></p>
 					<div class="donors">
 					</div>
 				</div>
 				<div class="bill-summary">
-					<h3>Summary:</h3>
-					<p>{{summary}}</p>
+					<h2>Summary:</h2>
+					<p>{{{summary}}}</p>
 				</div>	
 			</section>
 			
 			<section class="charts" aria-live="polite">
+				<h2>Data:</h2>
 				<div class="charts-support-oppose">
 					<canvas class="support-oppose"></canvas>	
 				</div>
@@ -161,24 +164,30 @@
 				</div>
 				<div class="legislator-name">
 					<a href="#?type=l&id={{id}}" id="{{id}}" class="rep-request">{{title}} {{name}} (<span class="affil-{{party}}">{{party}}</span>-{{state}})</a>
-				</div>	
+				</div>
+				<div class="legislator-contact-info">
+					<a href="{{url}}">Official Website</a>
+					<p>Phone: {{phone}}</p>					
+					<p>{{office}}</p>
+				</div>
 			</section>
 			<section class="sponsored-bills">
+				<h3>Recently sponsored bills:</h3>
 				<ul class="sponsored-bills-list" aria-live="polite"></ul>
 			</section>
 		</div>
 	</script>
 	<script type="text/x-handlebars-template" id="legislator_details_template">
 		<header class="back-to-results">
-			<a href="#" class="back-to-results-link">&lt; Back to results</a>
+			<a href="#" class="back-to-results-link"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to results</a>
 		</header>		
-		<div class="results-legislator-tile {{id}}">
+		<div class="legislator-tile {{id}}">
 			<section class="legislator-header">
 				<div class="legislator-image">
 					<img src="https://theunitedstates.io/images/congress/225x275/{{id}}.jpg" alt="{{title}} {{name}} official portrait" onerror="this.style.display='none'">
 				</div>
 				<div class="legislator-name">
-					<h1>{{title}} {{name}}</h1>
+					<h2>{{title}} {{name}}</h2>
 					<h3>(<span class="affil-{{party}}">{{party}}</span>-{{state}})</h3>
 				</div>
 				<div class="legislator-contact-info">

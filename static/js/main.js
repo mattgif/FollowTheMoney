@@ -45,7 +45,7 @@ function getPropublicaDetails(url,callback) {
 
 function handleReturnToResults() {
 	// invoked when user clicks "return" from a detail view page
-	$('.back-to-results-link').click(e => {		
+	$('.back-to-results').click(e => {		
 		e.preventDefault();		
 		clearContent();
 		$('.results').html(PAGE_CACHE.results);
@@ -113,7 +113,7 @@ function toggleSearchModal() {
 	}
 }
 
-function handleModalNav(page){		
+function handleModalNav(page){
 	if (page === 0) {
 		$('.js-modal-back').hide();
 		$('.search-type-select').show();
@@ -121,6 +121,7 @@ function handleModalNav(page){
 		$('.js-modal-next').show();
 		$('.js-modal-next').click(e => {
 			e.stopPropagation();
+
 			handleModalNav(1);
 		})
 	} else {

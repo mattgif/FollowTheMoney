@@ -65,6 +65,60 @@ a {
 	color: #FF7350;
 }
 
+.affil-R {
+	color: red;
+}
+
+.affil-D {
+	color: blue;
+}
+
+.affil-I {
+	color: green;
+}
+
+.results {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.results a {
+	color: #21409a;
+}
+
+.results a:hover {
+	color: #FF7350;
+}
+
+.searching, .results-count {
+	width: 100%;
+	margin-left: 10px;
+	margin-bottom: 20px;
+}
+
+.back-to-results {
+	height: 20px;
+	width: 140px;	
+	font-size: 18px;
+	padding: 15px 5px;
+	border: 1px solid #21409a;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.back-to-results:hover {
+	background-color: #becbe0;	
+}
+
+.back-to-results-link {
+	color: #21409a;
+}
+
+.detail-view {
+	margin-left: 2%;
+	margin-right: 2%;
+}
+
 /* search modal styling */
 .search-modal {
 	position: fixed;
@@ -303,22 +357,221 @@ a {
 }
 /* end splash styling */
 
-.affil-R {
-	color: red;
-}
-
-.affil-D {
-	color: blue;
-}
-
-.affil-I {
-	color: green;
-}
-
+/* bill results styling */
 .results-bill-tile {
-	margin: 10px;	
+	margin: 10px;
+	width: 100%;
+	border: 1px solid #999;
+	border-radius: 5px;
+	padding: 15px 8px;
 }
 
 .results-bill-tile h4 {
 	font-size: 1.25em;
+	margin-bottom: 8px;
 }
+/* end bill results styling*/
+
+/* bill details styling*/
+.bill-title {
+	font-size: 22px;	
+	border-top: 1px solid #999;
+	margin-bottom: 15px;
+	padding-top: 15px;
+}
+
+.date {
+	padding-bottom: 15px;
+	border-bottom: 1px solid #999;
+	color: #777;
+}
+
+.sponsor-tile {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 15px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #999;
+	margin-bottom: 15px;
+}
+
+.sponsor-tile img {
+	width: 200px;
+}
+
+@media screen and (min-width: 640px) {
+	.sponsor-tile img {	
+		width: 150px;	
+	}
+
+	.sponsor-image-tile {
+	margin-left: auto;
+	order: 1;
+	}
+}
+
+
+.sponsor-tile h2, .sponsor-tile h2 + p, .bill-summary h2 {
+	font-size: 18px;
+	margin: 10px 10px 10px 0px;
+}
+
+.rep-request {
+	color: #21409a;
+}
+
+.rep-request:hover {
+	color: #FF7350;
+}
+
+.sponsor-image-tile {	
+	order: 1;
+}
+
+.bill-summary {
+	width: 100%;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #999;
+	margin-bottom: 10px;
+}
+
+.topmatter {
+	margin-bottom: 15px;
+}
+
+.charts {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.charts-support-oppose, .charts-sector-breakdown, .charts-support-sector-breakdown, .charts-oppose-sector-breakdown {
+	padding: 10px;
+	width: 100%;
+}
+
+.charts h2 {
+	width: 100%;
+}
+
+.charts-sector-breakdown {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+@media screen and (min-width: 640px) {
+	.charts-support-sector-breakdown, .charts-oppose-sector-breakdown {
+		width: 60%;
+	}
+}
+
+@media screen and (min-width: 640px) {
+	.charts-sector-breakdown {
+		flex-wrap: nowrap;
+	}
+
+	.charts-support-oppose {
+		width: 80%;
+	}
+}
+/* end bill details styling*/
+
+/* legislator results styling */
+.results-legislator-tile {
+	margin: 10px;
+	width: 100%;
+	border: 1px solid #999;
+	border-radius: 5px;
+	padding: 15px 8px;
+}
+
+@media screen and (min-width: 750px) {
+	.results-legislator-tile {
+		width: 45%;
+	}
+}
+
+.results .legislator-header {
+	display: flex;
+	flex-wrap: wrap;
+	margin-bottom: 10px
+}
+
+.results .legislator-name {
+	width: 100%;
+	order: -1;
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.results .legislator-image {
+	width: 25%;
+	max-width: 100px;
+	margin-right: 5px;
+}
+
+.results .legislator-contact-info {
+	width: 70%;
+}
+
+.legislator-image img {
+	width: 100%;
+}
+
+.results .sponsored-bills {
+	border-top: 3px dotted #999;
+	padding-top: 5px;
+}
+
+.results .sponsored-bills h3 {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.results .sponsored-bills li {
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #bbb;
+}
+/* end legislator results styling */
+
+/* legislator details stylnig */
+.detail-view .legislator-header {
+	display: flex;
+	flex-wrap: wrap;
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #999;
+}
+
+.detail-view .legislator-name {
+	order: -1;
+	font-size: 22px;
+	width: 100%;	
+	margin-bottom: 10px;
+	color: #21409a;	
+}
+
+.detail-view .legislator-name * {
+	display: inline-block;
+}
+
+.detail-view .legislator-image {
+	width: 33%;
+	max-width: 225px;
+	margin-right: 10px;
+}
+
+@media screen and (max-width: 640px) {
+	.detail-view .legislator-image {
+		width: 80%;
+		max-width: 225px;
+		margin-right: 10px;
+	}
+}
+
+.detail-view .legislator-image img {
+	width: 100%;
+}
+/* end legislator details styling */

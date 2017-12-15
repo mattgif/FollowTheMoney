@@ -190,9 +190,12 @@ function renderLegislatorResults(memberOfCongress) {
 	const context = {		
 		id: m.id,
 		name: m.first_name + ' ' + m.last_name,
+		office: m.office,
 		party: m.party,
+		phone: m.phone,
 		state: m.state,
 		title: m.short_title,
+		url: m.url,
 	};
 	let source = $('#legislator_result_template').html();
 	let template = Handlebars.compile(source);
