@@ -90,6 +90,30 @@ function handleSearchTypeChange() {
 	});
 }
 
+function toggleSearchModal() {
+	$('.search-modal').toggleClass('hidden');
+}
+
+function handleModalSearchClick() {
+	// opens the search modal and changes the open/close icon
+	$('body').on('click','.js-opensearch', e => {
+		e.preventDefault;
+		console.log('modalSearchClicked')
+		toggleSearchModal();
+		if (PAGE_CACHE.modal_open) {
+			$('.opensearch').html(`
+				<i class="fa fa-search" aria-hidden="false"></i>
+			`)
+			PAGE_CACHE.modal_open = false;
+		} else {
+			$('.opensearch').html(`
+				<i class="fa fa-times" aria-hidden="true"></i>
+			`)
+			PAGE_CACHE.modal_open = true;			
+		}
+	})
+}
+
 function hideBrokenImages() {
 	$('body').on('error','img',function() {
 		alert("Image error")
@@ -224,7 +248,8 @@ function createMapLightCharts(billID) {
 function pageHandler() {
 	// runs listeners for page
 	displaySplash();
-	hideBrokenImages()
+	handleModalSearchClick();
+	hideBrokenImages();
 	handleSearch();
 	handleRepClick();
 	handleBillClick();

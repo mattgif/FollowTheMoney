@@ -1,4 +1,5 @@
 const PAGE_CACHE = {
+	modal_open: false,
 	congress_populated: false,
 	congress_populating: false,
 	searchTermResults: {

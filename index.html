@@ -27,22 +27,26 @@
 		<section class="detail-view" aria-live="polite"></section>
 	</main>
 
-
+	<section class="search-modal hidden">
+		<div class="search" role="search">
+			<button class="modal-back">&lt;</button>
+			<form action="#" class="search-form searchdisplay">
+				<select class="search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
+					<option value="b" selected="selected" aria-label="search for a bill">Bill search</option>
+					<option value="l" aria-label="search for a legislator">Legislator search</option>
+				</select>				
+				<input type="text" name="search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." hidden/>
+				<button type="submit" hidden><i class="fa fa-search" aria-hidden="true"></i></button>			
+			</form>	
+			<button class="modal-next">&gt;</button>		
+		</div>		
+	</section>
 	<!-- handlebars templates -->
 
 	<script type="text/x-handlebars-template" id="top-nav-template">
 		<div class="top-nav-bar">
 			<h4 class="nav brand"><a href="#" onClick="displaySplash()"><span class="brand-first">pol</span><span class="brand-mid">i</span><span class="brand-last">fluence</span></a></h4>
-			<div class="nav search" role="search">
-				<form action="#" class="nav search-form">
-					<select class="nav search-type" name="search-type" id="search-type" aria-label="Choose what to search for">
-						<option value="b" selected="selected" aria-label="search for a bill">Bill</option>
-						<option value="l" aria-label="search for a legislator">Legislator</option>
-					</select>				
-					<input type="text" name="nav search-query" class="search-query" aria-label="search" placeholder="Search for a bill..." />
-					<button type="nav submit"><i class="fa fa-search" aria-hidden="true"></i></button>			
-				</form>			
-			</div>		
+			<button class="opensearch js-opensearch"><i class="fa fa-search" aria-hidden="false"></i></button>	
 		</div>
 	</script>
 	<script type="text/x-handlebars-template" id="splash-content-template">
