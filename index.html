@@ -54,8 +54,8 @@
 			
 		</div>		
 	</section>
-	<!-- handlebars templates -->
 
+	<!-- handlebars templates -->
 	<script type="text/x-handlebars-template" id="top-nav-template">		
 		<div class="top-nav-bar">
 			<div class="top-nav-bar-inner">
@@ -190,12 +190,21 @@
 					<h2>{{title}} {{name}}</h2>
 					<h3>(<span class="affil-{{party}}">{{party}}</span>-{{state}})</h3>
 				</div>
-				<div class="legislator-contact-info">
-					<a href="{{url}}">Official Website</a>
-					<p>Phone: {{phone}}</p>					
-					<p>{{office}}</p>
+				<div class="topmatter">
+					<div class="legislator-contact-info">
+						<a href="{{url}}">Official Website</a>
+						<p>Phone: {{phone}}</p>					
+						<p>{{office}}</p>
+					</div>
+					<section class="sponsored-bills">
+						<h3>Recently sponsored bills:</h3>
+						<ul class="sponsored-bills-list" aria-live="polite"></ul>
+					</section>	
 				</div>
+				
 			</section>
+
+			<section class="vote-positions" class="vote-positions" aria-live="polite"></section>
 			<section class="charts">
 				<div class="charts-missed-votes">
 					<canvas class="missed-votes"></canvas>	
@@ -206,19 +215,18 @@
 				
 
 			</section>
-			<section class="sponsored-bills">
-				<ul class="sponsored-bills-list" aria-live="polite"></ul>
-			</section>
-			<section class="co-sponsored-bills">
-				<ul class="co-sponsored-bills-list" aria-live="polite"></ul>
-			</section>
-			<section class="vote-positions" class="vote-positions" aria-live="polite"></section>
+
 		</div>
 	</script>
 
 	<!-- end handlebars templates -->
 		
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-	<script type="text/javascript" src="static/js/polifluence-min.js"></script>
+	<script type="text/javascript" src="static/js/polifluence-min.js"></script>	
+	<!-- <script type="text/javascript" src="static/js/bills.js"></script>
+	<script type="text/javascript" src="static/js/charting.js"></script>
+	<script type="text/javascript" src="static/js/legislators.js"></script>
+	<script type="text/javascript" src="static/js/pagecache.js"></script>	
+	<script type="text/javascript" src="static/js/main.js"></script> -->
 </body>
 </html>

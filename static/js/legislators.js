@@ -1,5 +1,4 @@
-const PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/';
-
+PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/';
 // legislator functionality
 // depends on main.js
 
@@ -24,6 +23,16 @@ function displayLegislatorDetails(memberOfCongress) {
 	$('.detail-view').html(html);
 	generateMissedVoteChart(context.missed_votes);
 	generatePartyLoyaltyChart(context.votes_with_party_pct);
+
+	if (PAGE_CACHE.members.recent_bills[context.id]) {
+		// populates legislator tile with recent bills. uses cached version if available.
+		displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],10,context.id);
+	} else {
+		getRecentBillsSponsoredByLegislator(context.id,(results) => {
+			PAGE_CACHE.members.recent_bills[context.id] = results;
+			displaySponsoredBills(results,10,context.id);
+		})
+	}
 
 	handleReturnToResults();
 }
@@ -65,8 +74,6 @@ function displaySponsoredBills(sponsoredBillResults, maxResults, legislatorID) {
 	let renderedResults = sponsoredBills.map((billObj) => renderSponsoredBillResults(billObj));	
 	elementID = '.'	+ legislatorID
 	$(elementID).find('.sponsored-bills-list').html(renderedResults);
-	PAGE_CACHE.results = $('.results').html();
-	// caches page after results are in
 }
 
 function renderSponsoredBillResults(billObj) {
@@ -207,6 +214,8 @@ function renderLegislatorResults(memberOfCongress) {
 		getRecentBillsSponsoredByLegislator(context.id,(results) => {
 			PAGE_CACHE.members.recent_bills[context.id] = results;
 			displaySponsoredBills(results,3,context.id);
+			PAGE_CACHE.results = $('.results').html();
+			// caches page after results are in
 		})
 	}	
 	return html;

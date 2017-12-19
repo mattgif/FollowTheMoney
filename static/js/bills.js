@@ -86,7 +86,7 @@ function getBillSummary(billObj) {
 }
 
 function handleBillClick() {	
-	$('.results').on('click','.bill-request', function(e) {				
+	$('body').on('click','.bill-request', function(e) {				
 		e.preventDefault();
 		let bill_id = $(this).attr('id');
 		if (PAGE_CACHE[bill_id]) {

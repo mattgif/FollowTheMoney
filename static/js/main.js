@@ -25,8 +25,15 @@ function displaySplash() {
 	$('.results').html('');
 	$('.detail-view').html('');
 	$('nav').prop('hidden',true)
-	$('.splash-content').prop('hidden',false)
-
+	$('.splash-content').prop('hidden',false)	
+	if (PAGE_CACHE.modal_open) {
+		// hide modal if open
+		$('.search-modal').toggleClass('hidden');
+		$('.opensearch').html(`
+			<i class="fa fa-search"></i>
+		`)
+		PAGE_CACHE.modal_open = false;
+	}
 	let splashContent = $('#splash-content-template').html()
 
 	$('.splash-content').html(splashContent);
@@ -76,18 +83,20 @@ function handleSearch() {
 }
 
 function handleSearchTypeChange() {
-	$('.splash-content').on('change','.search-type',() => {
-		if (settings.splashDisplayed) {
-			if ($('.search-type').val() === "b") {
+	$('.splash-content, .search-modal').on('change','.search-type',() => {
+		if ($('.search-type').val() === "b") {
+			$('.search-query').attr('placeholder','Search for a bill...');
+			if (settings.splashDisplayed) {
 				$('.js-search-bill').prop('hidden',false);
 				$('.js-search-rep').prop('hidden',true);
-				$('.search-query').attr('placeholder','Search for a bill...');
-			} else {
+			};
+		} else {
+			$('.search-query').attr('placeholder','Search for a legislator...');
+			if (settings.splashDisplayed) {
 				$('.js-search-bill').prop('hidden',true);
 				$('.js-search-rep').prop('hidden',false);
-				$('.search-query').attr('placeholder','Search for a legislator...');
-			};	
-		};;		
+			};
+		};			
 	});
 }
 
@@ -142,8 +151,7 @@ function handleModalNav(page){
 function handleModalSearchClick() {
 	// opens the search modal and changes the open/close icon
 	$('body').on('click','.js-opensearch', e => {
-		e.preventDefault;
-		console.log('modalSearchClicked')
+		e.preventDefault;		
 		toggleSearchModal();		
 	})
 }
