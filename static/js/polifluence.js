@@ -1,7 +1,19 @@
+const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo';
+const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee';
+const MAPLIGHT_BILL_POSITION_ENDPOINT = 'https://cors-anywhere.herokuapp.com/http://classic.maplight.org/services_open_api/map.bill_positions_v1.json';
+
+const CURRENT_CONGRESS = 115;
+const settings = {
+	// settings for how data gets displayed
+	titleLength: 125,
+	splashDisplayed: 1,
+}
+
 const PAGE_CACHE = {
 	modal_open: false,
 	congress_populated: false,
 	congress_populating: false,
+	currently_displayed: null,
 	searchTermResults: {
 		b: {},
 		l: {},
@@ -476,307 +488,7 @@ const categoryCodes = {
 	Z9800: "Public Funding",
 	Z9999: "Internal Transfer and other non-contributions",
 }
-const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo';
-const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee';
-const MAPLIGHT_BILL_POSITION_ENDPOINT = 'https://cors-anywhere.herokuapp.com/http://classic.maplight.org/services_open_api/map.bill_positions_v1.json';
 
-const CURRENT_CONGRESS = 115;
-const settings = {
-	// settings for how data gets displayed
-	titleLength: 125,
-	splashDisplayed: 1,
-}
-
-// core functionality - shared by bills.js and legislators.js
-function clearContent() {
-	// clears splash elements and removes any results or details currently displayed; used to transition to new page
-	hideSplash();
-	$('.results').html('')
-	$('.detail-view').html('')
-	showTopBarSearch();
-}
-
-function displaySplash() {
-	// clears out all elements and displays the landing html
-	settings.splashDisplayed = 1;
-	$('nav').html('');
-	$('.results').html('');
-	$('.detail-view').html('');
-	$('nav').prop('hidden',true)
-	$('.splash-content').prop('hidden',false)	
-	if (PAGE_CACHE.modal_open) {
-		// hide modal if open
-		$('.search-modal').toggleClass('hidden');
-		$('.opensearch').html(`
-			<i class="fa fa-search"></i>
-		`)
-		PAGE_CACHE.modal_open = false;
-	}
-	let splashContent = $('#splash-content-template').html()
-
-	$('.splash-content').html(splashContent);
-}
-
-function getPropublicaDetails(url,callback) {	
-	$.ajax({		
-		headers: {'X-API-Key': PROPUBLICA_API_KEY},
-		// ProPub requires key in header
-		url: url,
-		datatype: 'json',
-		type: 'GET',
-		success: callback,
-	})
-}
-
-function handleReturnToResults() {
-	// invoked when user clicks "return" from a detail view page
-	$('.back-to-results').click(e => {		
-		e.preventDefault();		
-		clearContent();
-		$('.results').html(PAGE_CACHE.results);
-	});
-}
-
-function handleSearch() {
-	$('body').on('submit', '.search-form', e => {		
-		e.preventDefault();		
-		let searchTerm = $('.search-query').val();
-		let searchType = $('.search-type').val();
-		PAGE_CACHE.currentSearchTerm = searchTerm;
-		// stores search term for recall & caching
-		clearContent();
-		$('.results').html('<p class="searching">Searching...</p>');
-		if (searchType === "b") {			
-			if (PAGE_CACHE.searchTermResults['b'][searchTerm]) {
-				// checks to see if results are cached				
-				displayBillResults(PAGE_CACHE.searchTermResults['b'][searchTerm]);
-			} else {				
-				getBillDataFromPropublica(searchTerm,displayBillResults);	
-			}			
-		} else {			
-			searchForCongressMember(searchTerm.toLowerCase());
-		}
-		$('.search-query').val('');
-	})
-}
-
-function handleSearchTypeChange() {
-	$('.splash-content, .search-modal').on('change','.search-type',() => {
-		if ($('.search-type').val() === "b") {
-			$('.search-query').attr('placeholder','Search for a bill...');
-			if (settings.splashDisplayed) {
-				$('.js-search-bill').prop('hidden',false);
-				$('.js-search-rep').prop('hidden',true);
-			};
-		} else {
-			$('.search-query').attr('placeholder','Search for a legislator...');
-			if (settings.splashDisplayed) {
-				$('.js-search-bill').prop('hidden',true);
-				$('.js-search-rep').prop('hidden',false);
-			};
-		};			
-	});
-}
-
-function toggleSearchModal() {
-	$('.search-modal').toggleClass('hidden');
-	if (PAGE_CACHE.modal_open) {
-		$('.opensearch').html(`
-			<i class="fa fa-search"></i>
-		`)
-		PAGE_CACHE.modal_open = false;
-	} else {
-		$('.opensearch').html(`
-			<i class="fa fa-times"></i>
-		`)
-		PAGE_CACHE.modal_open = true;
-		$('body').keydown(e => {
-			// hide modal on escape press
-			if (e.keyCode==27){
-				toggleSearchModal()	
-			}			
-		})
-		handleModalNav(0);
-	}
-}
-
-function handleModalNav(page){
-	if (page === 0) {
-		$('.js-modal-back').hide();
-		$('.search-type-select').show();
-		$('.search-term-box').hide();		
-		$('.js-modal-next').show();
-		$('.js-modal-next').click(e => {
-			e.stopPropagation();
-
-			handleModalNav(1);
-		})
-	} else {
-		$('.js-modal-back').show();
-		$('.search-type-select').hide();
-		$('.search-term-box').show();		
-		$('.js-modal-next').hide();		
-		$('.js-modal-back').click(e => {
-			e.stopPropagation();
-			handleModalNav(0);
-		})
-		$('.submit-button').click(function() {
-			toggleSearchModal();
-		})
-	} 
-}
-
-function handleModalSearchClick() {
-	// opens the search modal and changes the open/close icon
-	$('body').on('click','.js-opensearch', e => {
-		e.preventDefault;		
-		toggleSearchModal();		
-	})
-}
-
-function hideBrokenImages() {
-	$('body').on('error','img',function() {
-		alert("Image error")
-	})
-}
-function hideSplash() {
-	settings.splashDisplayed = 0;
-	$('.splash-content').prop('hidden',true);
-	$('.splash-content').html('');
-}
-
-function pluralize(count,word) {	
-	return count === 1 ? word : (word + 's');
-}
-
-function showTopBarSearch() {
-	$('nav').prop('hidden',false);
-	let topBarSearch = $('#top-nav-template').html();
-	$('nav').html(topBarSearch);
-}
-
-// mapLight organization functionality
-function convertProPubBillTypeToMapLight(ppBillType) {
-	// converts the bill type supplied by propublica to the 'prefix' used by maplight
-	if (ppBillType === 'hr') {
-		return 'h';
-	} else if (ppBillType === 'hres') {
-		return 'hr';	
-	} else if (ppBillType === 'hjres') {
-		return 'hj';
-	} else if (ppBillType === 'sres') {
-		return 'sr';
-	} else if (ppBillType === 'sjres') {
-		return 'sj'
-	} else if (ppBillType === 's') {
-		return 's'
-	} else {
-		return 'sc';
-	}
-}
-
-function getOrgNamesandCounts(sectorObject) {
-	// input: obj with org sector #s as keys and array of orgs by name
-	// output: array of [array of sector names], [# of orgs in that sector]
-	// doesn't count sectors with only one member
-	let sectorNames = [];
-	let sectorCounts = [];
-	let keys = Object.keys(sectorObject)
-	for (let key in keys) {
-		// pushes count to sectorCounts, and sector name (if available) to sectorNames
-		if (sectorObject[keys[key]].length > 1 && keys[key]) {
-			sectorCounts.push(sectorObject[keys[key]].length);
-			sectorNames.push(categoryCodes[keys[key]]);
-			// categoryCodes is object created from OpenSecrets: https://www.opensecrets.org/downloads/crp/CRP_Categories.txt
-		};		
-	};
-	return [sectorNames,sectorCounts]
-}
-
-function getOrgPositionsOnBillfromMaplight(billID,callback) {
-	// takes propublica formatted bill_id, and returns json w/ 
-	// list of organizations that have taken a position on a bill		
-	let splitID = billID.split('-');
-	let session = splitID[1];
-	let prefixSplit = splitID[0].match(/[a-zA-Z]+|[0-9]+/g);
-	let prefix = convertProPubBillTypeToMapLight(prefixSplit[0]);
-	let number = prefixSplit[1];	
-	query = {
-		apikey: MAPLIGHT_API_KEY,
-		jurisdiction: 'us',		
-		number: number,
-		prefix: prefix,
-		session: session,			
-	};
-	$.getJSON(MAPLIGHT_BILL_POSITION_ENDPOINT,query,callback)
-}
-
-function getSectors(maplightBillJSON) {
-	// takes in maplight json object, returns object
-	// with support & oppose keys with values of objects 
-	// with category codes as keys and array of org names as values
-	const sectorCount = {
-		support: {},
-		oppose: {},
-	};
-	const organizations = maplightBillJSON.bill.organizations;	
-	for (let org in organizations) {		
-		if (organizations[org].disposition === "support") {
-			if (sectorCount.support[organizations[org].catcode]) {
-				sectorCount.support[organizations[org].catcode].push(organizations[org].name);
-			} else {
-				sectorCount.support[organizations[org].catcode] = [organizations[org].name];
-				}
-		} else {
-			if (sectorCount.oppose[organizations[org].catcode]) {
-				sectorCount.oppose[organizations[org].catcode].push(organizations[org].name);
-			} else {
-			sectorCount.oppose[organizations[org].catcode] = [organizations[org].name];
-			}
-		}
-	}	
-	return sectorCount;	
-}
-
-function helperMapLightDataCharts(billID) {
-	// takes billID and creates charts
-	// don't call this directly; use createMapLightCharts instead to ensure caching is used correctly
-	let sectorOverview = PAGE_CACHE.maplight[billID]
-	let supportCount = Object.keys(sectorOverview.support).length
-	let opposeCount = Object.keys(sectorOverview.oppose).length
-	let [sectorsSup,countsSup] = getOrgNamesandCounts(sectorOverview.support);	
-	let [sectorsOp,countsOp] = getOrgNamesandCounts(sectorOverview.oppose);
-	generateSectorSupOpChart([supportCount,opposeCount]);
-	generateSectorBreakdownChart(sectorsSup,countsSup,"support");
-	generateSectorBreakdownChart(sectorsOp,countsOp,"oppose");
-}
-
-function createMapLightCharts(billID) {
-	// retrieves maplight data from cache; if not available, request data, process, cache, then create maps
-	if (PAGE_CACHE.maplight[billID]) {		
-		helperMapLightDataCharts(billID);
-	} else {		
-		getOrgPositionsOnBillfromMaplight(billID,(results) => {			
-			let sectorResults = getSectors(results);			
-			PAGE_CACHE.maplight[billID] = sectorResults;
-			helperMapLightDataCharts(billID);
-		});		
-	};
-}
-
-// page handling
-function pageHandler() {
-	// runs listeners for page
-	displaySplash();
-	handleModalSearchClick();
-	hideBrokenImages();
-	handleSearch();
-	handleRepClick();
-	handleBillClick();
-	handleSearchTypeChange();
-}
-
-$(pageHandler())
 const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search.json';
 
 // bill functionality
@@ -800,6 +512,7 @@ function displayBill(bill) {
 		summary: summary,
 	}
 
+	PAGE_CACHE.currently_displayed = bill.bill_id;
 	let source = $('#bill_details_template').html();
 	let template = Handlebars.compile(source);
 	let html = template(context);
@@ -927,7 +640,9 @@ function relevantBillDateType(billObj) {
 function renderTitle(billItem) {
 	// makes sure bill titles are reasonable length
 	let title = billItem.short_title ? billItem.short_title : billItem.title;
-	(title.length > settings.titleLength) ? truncate(title) : title;
+	if (title.length > settings.titleLength) {
+		title = truncate(title);
+	}; 
 	return title;
 }
 
@@ -937,250 +652,7 @@ function truncate(title) {
 	const finalSpace = snip.lastIndexOf(" ");
 	return snip.slice(0,finalSpace) + "…";
 }
-PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/';
-// legislator functionality
-// depends on main.js
 
-function displayLegislatorDetails(memberOfCongress) {
-	clearContent();
-	let m = memberOfCongress
-	context = {				
-		id: m.id,
-		office: m.office,
-		missed_votes: m.missed_votes_pct,
-		name: m.first_name + ' ' + m.last_name,
-		party: m.party,
-		phone: m.phone,
-		state: m.state,
-		title: m.short_title,
-		url: m.url,
-		votes_with_party_pct: m.votes_with_party_pct,		
-	}
-	let source = $('#legislator_details_template').html();
-	let template = Handlebars.compile(source);
-	let html = template(context)
-	$('.detail-view').html(html);
-	generateMissedVoteChart(context.missed_votes);
-	generatePartyLoyaltyChart(context.votes_with_party_pct);
-
-	if (PAGE_CACHE.members.recent_bills[context.id]) {
-		// populates legislator tile with recent bills. uses cached version if available.
-		displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],10,context.id);
-	} else {
-		getRecentBillsSponsoredByLegislator(context.id,(results) => {
-			PAGE_CACHE.members.recent_bills[context.id] = results;
-			displaySponsoredBills(results,10,context.id);
-		})
-	}
-
-	handleReturnToResults();
-}
-
-function displayLegislatorResults(matchingMembers) {		
-	let resultCount = matchingMembers.length;
-	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
-	if (resultCount > 0) {		
-		const results = matchingMembers.map((memberOfCongress) => renderLegislatorResults(memberOfCongress));
-		$('.results').html(results);
-	} else {
-		// no results were found
-		$('.results').html('')
-		resultCountText = 'No results found';
-	}
-	$('.results').prepend(
-		`
-		<div class="results-count">
-			${resultCountText}
-		</div>
-		`
-	);
-	
-	// stores results page in variable so user can navigate back to it w/o making another external call
-	let searchTerm = PAGE_CACHE.currentSearchTerm;
-	if (!PAGE_CACHE.searchTermResults['l'][searchTerm]) {
-		PAGE_CACHE.searchTermResults['l'][searchTerm] = matchingMembers;
-	}
-	// cache results in case same search term is used again
-}
-
-function displaySponsoredBills(sponsoredBillResults, maxResults, legislatorID) {
-	// input: results of ProPublica json results for sponsored bills,
-	// and max number of results desired to display (if not specified, max=20)	
-	let sponsoredBills = sponsoredBillResults.results[0].bills;
-	if (maxResults) {
-		sponsoredBills = sponsoredBills.slice(0,maxResults);
-	};
-	let renderedResults = sponsoredBills.map((billObj) => renderSponsoredBillResults(billObj));	
-	elementID = '.'	+ legislatorID
-	$(elementID).find('.sponsored-bills-list').html(renderedResults);
-}
-
-function renderSponsoredBillResults(billObj) {
-	context = {
-		number: billObj.number,
-		id: billObj.bill_id,
-		title: renderTitle(billObj),
-		dateField: relevantBillDateType(billObj),
-		congress: billObj.congress,
-		uri: billObj.bill_uri,
-	};
-	let cached_uri = context.id + '_uri';
-	PAGE_CACHE[cached_uri] = context.uri;
-	// uri cached to be retrieved on click
-	return `
-		<li><p><a href="#?type=b&id=${context.id}" id="${context.id}" class="bill-request">${context.title}</a></p>
-			<p>Congress: <span class="js-congress-num">${context.congress}</span> | Bill number: ${context.number} | ${context.dateField} </p>
-		</li>
-	`
-}
-
-function getMemberListFromPropublica(chamber,callback) {	
-	$.ajax({		
-		headers: {'X-API-Key': PROPUBLICA_API_KEY},
-		// ProPub requires key in header
-		url: PROPUBLICA_MEMBER_ENDPOINT + CURRENT_CONGRESS + '/' + chamber + '/members.json',
-		datatype: 'jsonp',
-		type: 'GET',
-		success: callback,
-	})
-}
-
-function getRecentBillsSponsoredByLegislator(legislatorID,callback) {
-	// input: legislator ID, returns jsonObj
-	$.ajax({		
-		headers: {'X-API-Key': PROPUBLICA_API_KEY},
-		// ProPub requires key in header
-		url: PROPUBLICA_MEMBER_ENDPOINT + 'members/' + legislatorID + '/bills/introduced.json',
-		datatype: 'jsonp',
-		type: 'GET',
-		success: callback,
-	})
-}
-
-function getSpecificRepLocal(id) {
-	// checks cache to see if rep has been cached, and, if so, returns rep	
-	if (PAGE_CACHE.members.by_id[id]) {		
-		return PAGE_CACHE.members.by_id[id]
-	};
-	if (PAGE_CACHE.congress_populated) {
-		// no quick cache found - searching populated congress list
-		let congress = PAGE_CACHE.members.house.concat(PAGE_CACHE.members.senate);
-		let match = congress.filter((member) => {return (member.id === id)})
-		if (match.length > 0) {			
-			PAGE_CACHE.members.by_id[id] = match[0];
-			return match[0]
-		}
-	}
-	// dang, no quick cache, no local search.
-	return false;
-}
-
-function getSpecficRepPropublica(id, callback) {	
-	$.ajax({		
-		headers: {'X-API-Key': PROPUBLICA_API_KEY},
-		// ProPub requires key in header
-		url: 'https://api.propublica.org/congress/v1/members/' + id + '.json',
-		datatype: 'json',
-		type: 'GET',
-		success: (data) => {
-			let member = data.results[0];
-			let new_id = member.member_id;
-			PAGE_CACHE.members.by_id[new_id] = member;
-			let memberLocal = PAGE_CACHE.members.by_id[new_id]
-			// propublica stores data in different locations, depending on how the data is retrieved, the following normalize the objects
-			memberLocal.id = new_id;
-			member.title = member.roles[0].title;
-			member.state = member.roles[0].state;
-			member.party = member.roles[0].party;
-			member.short_title = member.roles[0].short_title;
-			member.votes_with_party_pct = member.roles[0].votes_with_party_pct;
-			member.missed_votes_pct = member.roles[0].missed_votes_pct;
-			member.phone = member.roles[0].phone;
-			member.office = member.roles[0].office;			
-			callback(member);
-		},
-	})
-} 
-
-function handleRepClick() {
-	$('body').on('click','.rep-request', function(e) {
-		e.preventDefault();
-		let id = $(this).attr('id');		
-		let legislator = getSpecificRepLocal(id);
-		if (legislator) {
-			displayLegislatorDetails(legislator);
-		} else {
-			getSpecficRepPropublica(id,displayLegislatorDetails);
-		};
-	})
-}	
-
-function populateCongressMemberInfo() {	
-	// chains json requests to populate page_cache with propublica info about both houses
-	PAGE_CACHE.congress_populating = true;
-	// keeps track of whether API request has gone out and not yet returned
-	getMemberListFromPropublica('house',data => {
-		// first get house info, and if successful cache data and grab senate info		
-		PAGE_CACHE.members['house'] = data.results[0].members;
-		getMemberListFromPropublica('senate',data => {
-			// grab senate info, cache, set flags indicating data has been cached
-			PAGE_CACHE.members['senate'] = data.results[0].members;
-			PAGE_CACHE.congress_populated = true;
-			PAGE_CACHE.congress_populating = false;						
-		})
-	})
-}
-
-function renderLegislatorResults(memberOfCongress) {
-	let m = memberOfCongress;
-	const context = {		
-		id: m.id,
-		name: m.first_name + ' ' + m.last_name,
-		office: m.office,
-		party: m.party,
-		phone: m.phone,
-		state: m.state,
-		title: m.short_title,
-		url: m.url,
-	};
-	let source = $('#legislator_result_template').html();
-	let template = Handlebars.compile(source);
-	let html = template(context);
-	if (PAGE_CACHE.members.recent_bills[context.id]) {
-		// populates legislator tile with recent bills. uses cached version if available.
-		displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],3,context.id);
-	} else {
-		getRecentBillsSponsoredByLegislator(context.id,(results) => {
-			PAGE_CACHE.members.recent_bills[context.id] = results;
-			displaySponsoredBills(results,3,context.id);
-			PAGE_CACHE.results = $('.results').html();
-			// caches page after results are in
-		})
-	}	
-	return html;
-}
-
-function searchForCongressMember(searchTerm) {
-	// returns array of congress member objects matching term
-	// if congress member info is not available in cache, requests data from ProPublica
-	if (PAGE_CACHE.congress_populated) {		
-		let congress = PAGE_CACHE.members.house.concat(PAGE_CACHE.members.senate);		
-		const matches = congress.filter(member => {			
-			const fullName = (member.first_name + ' ' + member.last_name).toLowerCase();			
-			return fullName.includes(searchTerm);
-		});		
-		displayLegislatorResults(matches);
-	} else if (PAGE_CACHE.congress_populating) {			
-		// patience, try again in 2s
-		setTimeout(function(){
-		searchForCongressMember(searchTerm);	
-		},2000);
-	} else {		
-		// request congress dump from ProPublica, then search
-		populateCongressMemberInfo(searchTerm);
-		searchForCongressMember(searchTerm);
-	}
-}
 function generateSectorSupOpChart(counts) {
     // takes array of ints formatted as [# of sectors supporting, # of sectors opposing]  
     let supportOpposeChart = $('.support-oppose');
@@ -1341,3 +813,618 @@ function round(value,decimals) {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
 
+PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/';
+// legislator functionality
+// depends on main.js
+
+function displayLegislatorDetails(memberOfCongress) {
+	clearContent();
+	let m = memberOfCongress
+	context = {				
+		id: m.id,
+		office: m.office,
+		missed_votes: m.missed_votes_pct,
+		name: m.first_name + ' ' + m.last_name,
+		party: m.party,
+		phone: m.phone,
+		state: m.state,
+		title: m.short_title,
+		url: m.url,
+		votes_with_party_pct: m.votes_with_party_pct,		
+	}
+	PAGE_CACHE.currently_displayed = context.id;
+	let source = $('#legislator_details_template').html();
+	let template = Handlebars.compile(source);
+	let html = template(context)
+	$('.detail-view').html(html);
+	generateMissedVoteChart(context.missed_votes);
+	generatePartyLoyaltyChart(context.votes_with_party_pct);
+	handleGetVotePositionClick()
+	handleShowRecentBillsClick();
+	handleReturnToResults();
+}
+
+function displayLegislatorResults(matchingMembers) {		
+	let resultCount = matchingMembers.length;
+	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
+	if (resultCount > 0) {		
+		const results = matchingMembers.map((memberOfCongress) => renderLegislatorResults(memberOfCongress));
+		$('.results').html(results);
+	} else {
+		// no results were found
+		$('.results').html('')
+		resultCountText = 'No results found';
+	}
+	$('.results').prepend(
+		`
+		<div class="results-count">
+			${resultCountText}
+		</div>
+		`
+	);
+	
+	// stores results page in variable so user can navigate back to it w/o making another external call
+	let searchTerm = PAGE_CACHE.currentSearchTerm;
+	if (!PAGE_CACHE.searchTermResults['l'][searchTerm]) {
+		PAGE_CACHE.searchTermResults['l'][searchTerm] = matchingMembers;
+	}
+	// cache results in case same search term is used again
+}
+
+function displaySponsoredBills(sponsoredBillResults, maxResults, legislatorID) {
+	// input: results of ProPublica json results for sponsored bills,
+	// and max number of results desired to display (if not specified, max=20)
+	if (sponsoredBillResults.results) {
+		let sponsoredBills = sponsoredBillResults.results[0].bills;
+		if (maxResults) {
+			sponsoredBills = sponsoredBills.slice(0,maxResults);
+		};
+		let renderedResults = sponsoredBills.map((billObj) => renderSponsoredBillResults(billObj));	
+		elementID = '.'	+ legislatorID
+		$(elementID).find('.sponsored-bills-list').html(renderedResults);	
+	}			
+}
+
+function getMemberListFromPropublica(chamber,callback) {	
+	$.ajax({		
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: PROPUBLICA_MEMBER_ENDPOINT + CURRENT_CONGRESS + '/' + chamber + '/members.json',
+		datatype: 'jsonp',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+function getRecentBillsSponsoredByLegislator(legislatorID,callback) {
+	// input: legislator ID, returns jsonObj
+	$.ajax({		
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: PROPUBLICA_MEMBER_ENDPOINT + 'members/' + legislatorID + '/bills/introduced.json',
+		datatype: 'jsonp',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+function getSpecificRepLocal(id) {
+	// checks cache to see if rep has been cached, and, if so, returns rep	
+	if (PAGE_CACHE.members.by_id[id]) {		
+		return PAGE_CACHE.members.by_id[id]
+	};
+	if (PAGE_CACHE.congress_populated) {
+		// no quick cache found - searching populated congress list
+		let congress = PAGE_CACHE.members.house.concat(PAGE_CACHE.members.senate);
+		let match = congress.filter((member) => {return (member.id === id)})
+		if (match.length > 0) {			
+			PAGE_CACHE.members.by_id[id] = match[0];
+			return match[0]
+		}
+	}
+	// dang, no quick cache, no local search.
+	return false;
+}
+
+function getSpecficRepPropublica(id, callback) {	
+	$.ajax({		
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: 'https://api.propublica.org/congress/v1/members/' + id + '.json',
+		datatype: 'json',
+		type: 'GET',
+		success: (data) => {
+			let member = data.results[0];
+			let new_id = member.member_id;
+			PAGE_CACHE.members.by_id[new_id] = member;
+			let memberLocal = PAGE_CACHE.members.by_id[new_id]
+			// propublica stores data in different locations, depending on how the data is retrieved, the following normalize the objects
+			memberLocal.id = new_id;
+			member.title = member.roles[0].title;
+			member.state = member.roles[0].state;
+			member.party = member.roles[0].party;
+			member.short_title = member.roles[0].short_title;
+			member.votes_with_party_pct = member.roles[0].votes_with_party_pct;
+			member.missed_votes_pct = member.roles[0].missed_votes_pct;
+			member.phone = member.roles[0].phone;
+			member.office = member.roles[0].office;			
+			callback(member);
+		},
+	})
+} 
+
+function displayVotePositions(positionData) {	
+	let voteResults = positionData[0].votes.map(renderVotePositions);	
+	$('.vote-positions-table').append(voteResults);
+}
+
+function getPositionIcon(position) {
+	if (position === "Yes") {
+		return `<i class="fa fa-thumbs-up" aria-hidden="true"></i> Yes`;
+	} else if (position === "No") {
+		return `<i class="fa fa-thumbs-down" aria-hidden="true"></i> No`;
+	} else {
+		return `<i class="fa fa-meh-o" aria-hidden="true"></i> ${position}`;
+	}
+}
+
+function getPositionDataFromPropublica(id, callback) {	
+	$.ajax({
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: 'https://api.propublica.org/congress/v1/members/' + id + '/votes.json',
+		datatype: 'json',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+function handleGetVotePositionClick() {
+	$('body').on('click','.get-recent-votes', function(e) {
+		e.preventDefault();
+		$('.get-recent-votes').toggle();
+		$('.vote-positions').toggle();
+		if ($('.vote-positions').is(':visible')) {
+			let currentID = PAGE_CACHE.currently_displayed;
+			if (PAGE_CACHE.members.by_id[currentID].vote_positions) {
+				displayVotePositions(PAGE_CACHE.members.by_id[currentID].vote_positions);
+			} else {
+				getPositionDataFromPropublica(currentID,(data) => {
+					PAGE_CACHE.members.by_id[currentID].vote_positions = data.results;
+					displayVotePositions(data.results);
+				})
+			}	
+		}		
+	})
+}
+
+function handleRepClick() {
+	$('body').on('click','.rep-request', function(e) {
+		e.preventDefault();
+		let id = $(this).attr('id');		
+		let legislator = getSpecificRepLocal(id);
+		if (legislator) {
+			displayLegislatorDetails(legislator);
+		} else {
+			getSpecficRepPropublica(id,displayLegislatorDetails);
+		};
+	})
+}
+
+function handleShowRecentBillsClick() {
+	$('body').on('click','.show-recent-bills', function(e) {
+		e.preventDefault();
+		$('.show-recent-bills').toggle();
+		$('.sponsored-bills-list').toggle();
+		if ($('.sponsored-bills-list').is(':visible')) {
+			if (PAGE_CACHE.members.recent_bills[context.id]) {
+			// populates legislator tile with recent bills. uses cached version if available.
+				displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],10,context.id);
+			} else {
+				getRecentBillsSponsoredByLegislator(context.id,(results) => {
+					PAGE_CACHE.members.recent_bills[context.id] = results;
+					displaySponsoredBills(results,10,context.id);
+				})
+			}	
+		}		
+	})
+}
+
+function populateCongressMemberInfo() {	
+	// chains json requests to populate page_cache with propublica info about both houses
+	PAGE_CACHE.congress_populating = true;
+	// keeps track of whether API request has gone out and not yet returned
+	getMemberListFromPropublica('house',data => {
+		// first get house info, and if successful cache data and grab senate info		
+		PAGE_CACHE.members['house'] = data.results[0].members;
+		getMemberListFromPropublica('senate',data => {
+			// grab senate info, cache, set flags indicating data has been cached
+			PAGE_CACHE.members['senate'] = data.results[0].members;
+			PAGE_CACHE.congress_populated = true;
+			PAGE_CACHE.congress_populating = false;						
+		})
+	})
+}
+
+function renderLegislatorResults(memberOfCongress) {
+	let m = memberOfCongress;
+	const context = {		
+		id: m.id,
+		name: m.first_name + ' ' + m.last_name,
+		office: m.office,
+		party: m.party,
+		phone: m.phone,
+		state: m.state,
+		title: m.short_title,
+		url: m.url,
+	};
+	let source = $('#legislator_result_template').html();
+	let template = Handlebars.compile(source);
+	let html = template(context);
+	if (PAGE_CACHE.members.recent_bills[context.id]) {
+		// populates legislator tile with recent bills. uses cached version if available.
+		displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],3,context.id);
+	} else {
+		getRecentBillsSponsoredByLegislator(context.id,(results) => {
+			PAGE_CACHE.members.recent_bills[context.id] = results;
+			displaySponsoredBills(results,3,context.id);
+			PAGE_CACHE.results = $('.results').html();
+			// caches page after results are in
+		})
+	}	
+	return html;
+}
+
+function renderSponsoredBillResults(billObj) {
+	context = {
+		number: billObj.number,
+		id: billObj.bill_id,
+		title: renderTitle(billObj),
+		dateField: relevantBillDateType(billObj),
+		congress: billObj.congress,
+		uri: billObj.bill_uri,
+	};
+	let cached_uri = context.id + '_uri';
+	PAGE_CACHE[cached_uri] = context.uri;
+	// uri cached to be retrieved on click
+	return `
+		<li><p><a href="#?type=b&id=${context.id}" id="${context.id}" class="bill-request">${context.title}</a></p>
+			<p>Congress: <span class="js-congress-num">${context.congress}</span> | Bill number: ${context.number} | ${context.dateField} </p>
+		</li>
+	`
+}
+
+function renderVotePositions(vote) {	
+	if (vote.description) {
+		let bill_id = vote.bill.bill_id;		
+		let position = getPositionIcon(vote.position);
+		let question = vote.question;
+		let result = vote.result;
+		return `
+		<tr>
+			<td class="position-bill-name"><a href="#?type=b&id=${bill_id}" id="${bill_id}" class="bill-request">${vote.description}</a></td>
+			<td class="position-vote-question">${vote.question}</td>
+			<td class="position-position">${position}</td>
+			<td class="position-result">${vote.result}</td>
+			<td class="position-vote-date"><time>${vote.date}</time></td>
+		</tr>
+		`
+	} else {
+		return '';
+	};
+}
+
+function searchForCongressMember(searchTerm) {
+	// returns array of congress member objects matching term
+	// if congress member info is not available in cache, requests data from ProPublica
+	if (PAGE_CACHE.congress_populated) {		
+		let congress = PAGE_CACHE.members.house.concat(PAGE_CACHE.members.senate);		
+		const matches = congress.filter(member => {			
+			const fullName = (member.first_name + ' ' + member.last_name).toLowerCase();			
+			return fullName.includes(searchTerm);
+		});		
+		displayLegislatorResults(matches);
+	} else if (PAGE_CACHE.congress_populating) {			
+		// patience, try again in 2s
+		setTimeout(function(){
+		searchForCongressMember(searchTerm);	
+		},2000);
+	} else {		
+		// request congress dump from ProPublica, then search
+		populateCongressMemberInfo(searchTerm);
+		searchForCongressMember(searchTerm);
+	}
+}
+
+// core functionality - shared by bills.js and legislators.js
+function clearContent() {
+	// clears splash elements and removes any results or details currently displayed; used to transition to new page
+	hideSplash();
+	$('.results').html('')
+	$('.detail-view').html('')
+	showTopBarSearch();
+}
+
+function displaySplash() {
+	// clears out all elements and displays the landing html
+	settings.splashDisplayed = 1;
+	$('nav').html('');
+	$('.results').html('');
+	$('.detail-view').html('');
+	$('nav').prop('hidden',true)
+	$('.splash-content').prop('hidden',false)	
+	if (PAGE_CACHE.modal_open) {
+		// hide modal if open
+		$('.search-modal').toggleClass('hidden');
+		$('.opensearch').html(`
+			<i class="fa fa-search"></i>
+		`)
+		PAGE_CACHE.modal_open = false;
+	}
+	let splashContent = $('#splash-content-template').html()
+
+	$('.splash-content').html(splashContent);
+}
+
+function getPropublicaDetails(url,callback) {	
+	$.ajax({		
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: url,
+		datatype: 'json',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+function handleReturnToResults() {
+	// invoked when user clicks "return" from a detail view page
+	$('.back-to-results').click(e => {		
+		e.preventDefault();		
+		clearContent();
+		$('.results').html(PAGE_CACHE.results);
+	});
+}
+
+function handleSearch() {
+	$('body').on('submit', '.search-form', e => {		
+		e.preventDefault();		
+		let searchTerm = $('.search-query').val();
+		let searchType = $('.search-type').val();
+		PAGE_CACHE.currentSearchTerm = searchTerm;
+		// stores search term for recall & caching
+		clearContent();
+		$('.results').html('<p class="searching">Searching...</p>');
+		if (searchType === "b") {			
+			if (PAGE_CACHE.searchTermResults['b'][searchTerm]) {
+				// checks to see if results are cached				
+				displayBillResults(PAGE_CACHE.searchTermResults['b'][searchTerm]);
+			} else {				
+				getBillDataFromPropublica(searchTerm,displayBillResults);	
+			}			
+		} else {
+			if (searchTerm != '') {
+				searchForCongressMember(searchTerm.toLowerCase());	
+			}			
+		}
+		$('.search-query').val('');
+	})
+}
+
+function handleSearchTypeChange() {
+	$('.splash-content, .search-modal').on('change','.search-type',() => {
+		if ($('.search-type').val() === "b") {
+			$('.search-query').attr('placeholder','Search for a bill...');
+			if (settings.splashDisplayed) {
+				$('.js-search-bill').prop('hidden',false);
+				$('.js-search-rep').prop('hidden',true);
+			};
+		} else {
+			$('.search-query').attr('placeholder','Search for a legislator...');
+			if (settings.splashDisplayed) {
+				$('.js-search-bill').prop('hidden',true);
+				$('.js-search-rep').prop('hidden',false);
+			};
+		};			
+	});
+}
+
+function toggleSearchModal() {
+	$('.search-modal').toggleClass('hidden');
+	if (PAGE_CACHE.modal_open) {
+		$('.opensearch').html(`
+			<i class="fa fa-search"></i>
+		`)
+		PAGE_CACHE.modal_open = false;
+	} else {
+		$('.opensearch').html(`
+			<i class="fa fa-times"></i>
+		`)
+		PAGE_CACHE.modal_open = true;
+		$('body').keydown(e => {
+			// hide modal on escape press
+			if (e.keyCode==27){
+				toggleSearchModal()	
+			}			
+		})
+		handleModalNav(0);
+	}
+}
+
+function handleModalNav(page){
+	if (page === 0) {
+		$('.js-modal-back').hide();
+		$('.search-type-select').show();
+		$('.search-term-box').hide();		
+		$('.js-modal-next').show();
+		$('.js-modal-next').click(e => {
+			e.stopPropagation();
+
+			handleModalNav(1);
+		})
+	} else {
+		$('.js-modal-back').show();
+		$('.search-type-select').hide();
+		$('.search-term-box').show();		
+		$('.js-modal-next').hide();		
+		$('.js-modal-back').click(e => {
+			e.stopPropagation();
+			handleModalNav(0);
+		})
+		$('.submit-button').click(function() {
+			toggleSearchModal();
+		})
+	} 
+}
+
+function handleModalSearchClick() {
+	// opens the search modal and changes the open/close icon
+	$('body').on('click','.js-opensearch', e => {
+		e.preventDefault;		
+		toggleSearchModal();		
+	})
+}
+
+function hideBrokenImages() {
+	$('body').on('error','img',function() {
+		alert("Image error")
+	})
+}
+function hideSplash() {
+	settings.splashDisplayed = 0;
+	$('.splash-content').prop('hidden',true);
+	$('.splash-content').html('');
+}
+
+function pluralize(count,word) {	
+	return count === 1 ? word : (word + 's');
+}
+
+function showTopBarSearch() {
+	$('nav').prop('hidden',false);
+	let topBarSearch = $('#top-nav-template').html();
+	$('nav').html(topBarSearch);
+}
+
+// mapLight organization functionality
+function convertProPubBillTypeToMapLight(ppBillType) {
+	// converts the bill type supplied by propublica to the 'prefix' used by maplight
+	if (ppBillType === 'hr') {
+		return 'h';
+	} else if (ppBillType === 'hres') {
+		return 'hr';	
+	} else if (ppBillType === 'hjres') {
+		return 'hj';
+	} else if (ppBillType === 'sres') {
+		return 'sr';
+	} else if (ppBillType === 'sjres') {
+		return 'sj'
+	} else if (ppBillType === 's') {
+		return 's'
+	} else {
+		return 'sc';
+	}
+}
+
+function createMapLightCharts(billID) {
+	// retrieves maplight data from cache; if not available, request data, process, cache, then create maps
+	if (PAGE_CACHE.maplight[billID]) {		
+		helperMapLightDataCharts(billID);
+	} else {		
+		getOrgPositionsOnBillfromMaplight(billID,(results) => {			
+			let sectorResults = getSectors(results);			
+			PAGE_CACHE.maplight[billID] = sectorResults;
+			helperMapLightDataCharts(billID);
+		});		
+	};
+}
+
+function getOrgNamesandCounts(sectorObject) {
+	// input: obj with org sector #s as keys and array of orgs by name
+	// output: array of [array of sector names], [# of orgs in that sector]
+	// doesn't count sectors with only one member
+	let sectorNames = [];
+	let sectorCounts = [];
+	let keys = Object.keys(sectorObject)
+	for (let key in keys) {
+		// pushes count to sectorCounts, and sector name (if available) to sectorNames
+		if (sectorObject[keys[key]].length > 1 && keys[key]) {
+			sectorCounts.push(sectorObject[keys[key]].length);
+			sectorNames.push(categoryCodes[keys[key]]);
+			// categoryCodes is object created from OpenSecrets: https://www.opensecrets.org/downloads/crp/CRP_Categories.txt
+		};		
+	};
+	return [sectorNames,sectorCounts]
+}
+
+function getOrgPositionsOnBillfromMaplight(billID,callback) {
+	// takes propublica formatted bill_id, and returns json w/ 
+	// list of organizations that have taken a position on a bill		
+	let splitID = billID.split('-');
+	let session = splitID[1];
+	let prefixSplit = splitID[0].match(/[a-zA-Z]+|[0-9]+/g);
+	let prefix = convertProPubBillTypeToMapLight(prefixSplit[0]);
+	let number = prefixSplit[1];	
+	query = {
+		apikey: MAPLIGHT_API_KEY,
+		jurisdiction: 'us',		
+		number: number,
+		prefix: prefix,
+		session: session,			
+	};
+	$.getJSON(MAPLIGHT_BILL_POSITION_ENDPOINT,query,callback)
+}
+
+function getSectors(maplightBillJSON) {
+	// takes in maplight json object, returns object
+	// with support & oppose keys with values of objects 
+	// with category codes as keys and array of org names as values
+	const sectorCount = {
+		support: {},
+		oppose: {},
+	};
+	const organizations = maplightBillJSON.bill.organizations;	
+	for (let org in organizations) {		
+		if (organizations[org].disposition === "support") {
+			if (sectorCount.support[organizations[org].catcode]) {
+				sectorCount.support[organizations[org].catcode].push(organizations[org].name);
+			} else {
+				sectorCount.support[organizations[org].catcode] = [organizations[org].name];
+				}
+		} else {
+			if (sectorCount.oppose[organizations[org].catcode]) {
+				sectorCount.oppose[organizations[org].catcode].push(organizations[org].name);
+			} else {
+			sectorCount.oppose[organizations[org].catcode] = [organizations[org].name];
+			}
+		}
+	}	
+	return sectorCount;	
+}
+
+function helperMapLightDataCharts(billID) {
+	// takes billID and creates charts
+	// don't call this directly; use createMapLightCharts instead to ensure caching is used correctly
+	let sectorOverview = PAGE_CACHE.maplight[billID]
+	let supportCount = Object.keys(sectorOverview.support).length
+	let opposeCount = Object.keys(sectorOverview.oppose).length
+	let [sectorsSup,countsSup] = getOrgNamesandCounts(sectorOverview.support);	
+	let [sectorsOp,countsOp] = getOrgNamesandCounts(sectorOverview.oppose);
+	generateSectorSupOpChart([supportCount,opposeCount]);
+	generateSectorBreakdownChart(sectorsSup,countsSup,"support");
+	generateSectorBreakdownChart(sectorsOp,countsOp,"oppose");
+}
+
+// page handling
+function pageHandler() {
+	// runs listeners for page
+	displaySplash();
+	handleModalSearchClick();
+	hideBrokenImages();	
+	handleBillClick();	
+	handleRepClick();
+	handleSearch();
+	handleSearchTypeChange();
+}
+
+$(pageHandler())

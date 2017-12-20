@@ -58,15 +58,16 @@ function displayLegislatorResults(matchingMembers) {
 
 function displaySponsoredBills(sponsoredBillResults, maxResults, legislatorID) {
 	// input: results of ProPublica json results for sponsored bills,
-	// and max number of results desired to display (if not specified, max=20)	
-	console.log(sponsoredBillResults)
-	let sponsoredBills = sponsoredBillResults.results[0].bills;
-	if (maxResults) {
-		sponsoredBills = sponsoredBills.slice(0,maxResults);
-	};
-	let renderedResults = sponsoredBills.map((billObj) => renderSponsoredBillResults(billObj));	
-	elementID = '.'	+ legislatorID
-	$(elementID).find('.sponsored-bills-list').html(renderedResults);
+	// and max number of results desired to display (if not specified, max=20)
+	if (sponsoredBillResults.results) {
+		let sponsoredBills = sponsoredBillResults.results[0].bills;
+		if (maxResults) {
+			sponsoredBills = sponsoredBills.slice(0,maxResults);
+		};
+		let renderedResults = sponsoredBills.map((billObj) => renderSponsoredBillResults(billObj));	
+		elementID = '.'	+ legislatorID
+		$(elementID).find('.sponsored-bills-list').html(renderedResults);	
+	}			
 }
 
 function getMemberListFromPropublica(chamber,callback) {	
