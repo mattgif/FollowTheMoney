@@ -1,14 +1,3 @@
-const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo';
-const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee';
-const MAPLIGHT_BILL_POSITION_ENDPOINT = 'https://cors-anywhere.herokuapp.com/http://classic.maplight.org/services_open_api/map.bill_positions_v1.json';
-
-const CURRENT_CONGRESS = 115;
-const settings = {
-	// settings for how data gets displayed
-	titleLength: 125,
-	splashDisplayed: 1,
-}
-
 const PAGE_CACHE = {
 	modal_open: false,
 	congress_populated: false,
@@ -1089,7 +1078,9 @@ function renderSponsoredBillResults(billObj) {
 	// uri cached to be retrieved on click
 	return `
 		<li><p><a href="#?type=b&id=${context.id}" id="${context.id}" class="bill-request">${context.title}</a></p>
-			<p>Congress: <span class="js-congress-num">${context.congress}</span> | Bill number: ${context.number} | ${context.dateField} </p>
+			<p><strong>Congress:</strong> <span class="js-congress-num">${context.congress}</span></p>
+			<p><strong>Bill number:</strong> ${context.number}<p>
+			<p>${context.dateField}</p>
 		</li>
 	`
 }
@@ -1134,6 +1125,17 @@ function searchForCongressMember(searchTerm) {
 		populateCongressMemberInfo(searchTerm);
 		searchForCongressMember(searchTerm);
 	}
+}
+
+const PROPUBLICA_API_KEY = 'eKsVN99hpB4wdCIFiDwTUxd1QRA45ACta0PWdxJo';
+const MAPLIGHT_API_KEY = '01f384a9c18616b752063d174eda5fee';
+const MAPLIGHT_BILL_POSITION_ENDPOINT = 'https://cors-anywhere.herokuapp.com/http://classic.maplight.org/services_open_api/map.bill_positions_v1.json';
+
+const CURRENT_CONGRESS = 115;
+const settings = {
+	// settings for how data gets displayed
+	titleLength: 125,
+	splashDisplayed: 1,
 }
 
 // core functionality - shared by bills.js and legislators.js
