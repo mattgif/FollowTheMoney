@@ -3,6 +3,7 @@ body {
 	font-family: Calibre,sans-serif;
 	box-sizing: border-box;
 	padding-top: 55px;
+	line-height: 1.4em;
 }
 
 h1, .search-form {
@@ -11,6 +12,10 @@ h1, .search-form {
 
 a {
 	text-decoration: none;	
+}
+
+strong {
+	font-weight: bold;
 }
 
 .hidden {
@@ -250,22 +255,29 @@ a {
 	background: url('../img/select_dropdown.png') no-repeat 96%;
 	width: 127px;
 	overflow: hidden;	
-	height: 32px;
-	display: inline-block;
+	height: 34px;	
 	position: relative;
+	right: 0px;
 	top: 6px;
 	border-radius: 5px;
 	border: 1px solid #21409a;
+	margin-right: auto;
+	margin-left: auto;
 }
 
-.splash-content #search-type {	
+.splash-content #search-type {
+	width: 180px;
 	padding-right: 30px;
-	padding-left: 10px;	
+	padding-left: 10px;		
 	background: transparent;	
 	color: #21409a;
 	font-size: 1em;
-	height: 30px;	
+	height: 32px;	
 	border: none;
+}
+
+#search-type option {
+	padding-bottom: 10px;
 }
 
 .splash-content .primary-search form {
@@ -358,6 +370,7 @@ a {
 	border: 1px solid #999;
 	border-radius: 5px;
 	padding: 15px 8px;
+	background-color: #fff;
 }
 
 .results-bill-tile h4 {
@@ -479,11 +492,12 @@ a {
 	border: 1px solid #999;
 	border-radius: 5px;
 	padding: 15px 8px;
+	background-color: #fff;
 }
 
 @media screen and (min-width: 750px) {
 	.results-legislator-tile {
-		width: 45%;
+		width: 45%;		
 	}
 }
 
@@ -516,7 +530,7 @@ a {
 
 .results .sponsored-bills {
 	border-top: 3px dotted #999;
-	padding-top: 5px;
+	padding: 10px 5px 5px 5px;
 }
 
 .results .sponsored-bills h3 {
@@ -528,6 +542,11 @@ a {
 	margin-bottom: 5px;
 	padding-bottom: 5px;
 	border-bottom: 1px solid #bbb;
+	line-height: 1.5em;
+}
+
+.results .sponsored-bills .bill-request {
+	font-weight: bold;
 }
 /* end legislator results styling */
 
