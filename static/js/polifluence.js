@@ -570,13 +570,14 @@ function getBillSummary(billObj) {
 function handleBillClick() {	
 	$('body').on('click','.bill-request', function(e) {				
 		e.preventDefault();
+		e.stopPropagation();
 		let bill_id = $(this).attr('id');
 		if (PAGE_CACHE[bill_id]) {
 			displayBill(PAGE_CACHE[bill_id]);	
 		} else {			
 			let cached_uri = bill_id + "_uri"
 			let url = PAGE_CACHE[cached_uri];			
-			getSpecificBill(url,(data) => {				
+			getSpecificBill(url,(data) => {							
 				let bill = data.results[0];
 				PAGE_CACHE[bill.bill_id] = bill;
 				PAGE_CACHE[bill.bill_id].sponsor_name = bill.sponsor;
@@ -1095,7 +1096,7 @@ function renderVotePositions(vote) {
 		let result = vote.result;
 		return `
 		<tr>
-			<td class="position-bill-name"><a href="#?type=b&id=${bill_id}" id="${bill_id}" class="bill-request">${vote.description}</a></td>
+			<td class="position-bill-name">${vote.description}</td>
 			<td class="position-vote-question">${vote.question}</td>
 			<td class="position-position">${position}</td>
 			<td class="position-result">${vote.result}</td>

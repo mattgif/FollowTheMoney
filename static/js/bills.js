@@ -90,13 +90,14 @@ function getBillSummary(billObj) {
 function handleBillClick() {	
 	$('body').on('click','.bill-request', function(e) {				
 		e.preventDefault();
+		e.stopPropagation();
 		let bill_id = $(this).attr('id');
 		if (PAGE_CACHE[bill_id]) {
 			displayBill(PAGE_CACHE[bill_id]);	
 		} else {			
 			let cached_uri = bill_id + "_uri"
 			let url = PAGE_CACHE[cached_uri];			
-			getSpecificBill(url,(data) => {				
+			getSpecificBill(url,(data) => {							
 				let bill = data.results[0];
 				PAGE_CACHE[bill.bill_id] = bill;
 				PAGE_CACHE[bill.bill_id].sponsor_name = bill.sponsor;

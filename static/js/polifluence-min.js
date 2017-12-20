@@ -11,7 +11,7 @@ $('.results').prepend(`
 		`);PAGE_CACHE.results=$('.results').html();let searchTerm=PAGE_CACHE.currentSearchTerm;if(!PAGE_CACHE.searchTermResults.b[searchTerm]){PAGE_CACHE.searchTermResults.b[searchTerm]=data}}
 function getBillDataFromPropublica(searchTerm,callback){$.ajax({headers:{'X-API-Key':PROPUBLICA_API_KEY},url:PROPUBLICA_ENDPOINT,data:{query:searchTerm,},datatype:'jsonp',type:'GET',success:callback,})}
 function getBillSummary(billObj){if(billObj.summary_short){return billObj.summary_short}else if(billObj.summary){return billObj.summary}else{return'No summary available.'}}
-function handleBillClick(){$('body').on('click','.bill-request',function(e){e.preventDefault();let bill_id=$(this).attr('id');if(PAGE_CACHE[bill_id]){displayBill(PAGE_CACHE[bill_id])}else{let cached_uri=bill_id+"_uri"
+function handleBillClick(){$('body').on('click','.bill-request',function(e){e.preventDefault();e.stopPropagation();let bill_id=$(this).attr('id');if(PAGE_CACHE[bill_id]){displayBill(PAGE_CACHE[bill_id])}else{let cached_uri=bill_id+"_uri"
 let url=PAGE_CACHE[cached_uri];getSpecificBill(url,(data)=>{let bill=data.results[0];PAGE_CACHE[bill.bill_id]=bill;PAGE_CACHE[bill.bill_id].sponsor_name=bill.sponsor;displayBill(PAGE_CACHE[bill.bill_id])})}})}
 function getSpecificBill(url,callback){$.ajax({headers:{'X-API-Key':PROPUBLICA_API_KEY},url:url,datatype:'json',type:'GET',success:callback,})}
 function renderBillResults(item){const title=renderTitle(item);const context={bill_uri:item.bill_uri,datefield:relevantBillDateType(item),bill_id:item.bill_id,number:item.number,sponsor_uri:item.sponsor_uri,sponsor_id:item.sponsor_id,sponsor:item.sponsor_name,sponsor_title:item.sponsor_title,sponsor_party:item.sponsor_party,party_icon:settings.party_icon[item.sponsor_party],state:item.sponsor_state,subject:(item.primary_subject)?`Subject: ${item.primary_subject}`:'',title:title,}
@@ -67,7 +67,7 @@ function renderSponsoredBillResults(billObj){context={number:billObj.number,id:b
 	`}
 function renderVotePositions(vote){if(vote.description){let bill_id=vote.bill.bill_id;let position=getPositionIcon(vote.position);let question=vote.question;let result=vote.result;return `
 		<tr>
-			<td class="position-bill-name"><a href="#?type=b&id=${bill_id}" id="${bill_id}" class="bill-request">${vote.description}</a></td>
+			<td class="position-bill-name">${vote.description}</td>
 			<td class="position-vote-question">${vote.question}</td>
 			<td class="position-position">${position}</td>
 			<td class="position-result">${vote.result}</td>

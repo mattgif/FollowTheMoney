@@ -289,7 +289,7 @@ function renderVotePositions(vote) {
 		let result = vote.result;
 		return `
 		<tr>
-			<td class="position-bill-name"><a href="#?type=b&id=${bill_id}" id="${bill_id}" class="bill-request">${vote.description}</a></td>
+			<td class="position-bill-name">${vote.description}</td>
 			<td class="position-vote-question">${vote.question}</td>
 			<td class="position-position">${position}</td>
 			<td class="position-result">${vote.result}</td>
