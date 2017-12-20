@@ -17,23 +17,15 @@ function displayLegislatorDetails(memberOfCongress) {
 		url: m.url,
 		votes_with_party_pct: m.votes_with_party_pct,		
 	}
+	PAGE_CACHE.currently_displayed = context.id;
 	let source = $('#legislator_details_template').html();
 	let template = Handlebars.compile(source);
 	let html = template(context)
 	$('.detail-view').html(html);
 	generateMissedVoteChart(context.missed_votes);
 	generatePartyLoyaltyChart(context.votes_with_party_pct);
-
-	if (PAGE_CACHE.members.recent_bills[context.id]) {
-		// populates legislator tile with recent bills. uses cached version if available.
-		displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],10,context.id);
-	} else {
-		getRecentBillsSponsoredByLegislator(context.id,(results) => {
-			PAGE_CACHE.members.recent_bills[context.id] = results;
-			displaySponsoredBills(results,10,context.id);
-		})
-	}
-
+	handleGetVotePositionClick()
+	handleShowRecentBillsClick();
 	handleReturnToResults();
 }
 
@@ -67,6 +59,7 @@ function displayLegislatorResults(matchingMembers) {
 function displaySponsoredBills(sponsoredBillResults, maxResults, legislatorID) {
 	// input: results of ProPublica json results for sponsored bills,
 	// and max number of results desired to display (if not specified, max=20)	
+	console.log(sponsoredBillResults)
 	let sponsoredBills = sponsoredBillResults.results[0].bills;
 	if (maxResults) {
 		sponsoredBills = sponsoredBills.slice(0,maxResults);
@@ -74,25 +67,6 @@ function displaySponsoredBills(sponsoredBillResults, maxResults, legislatorID) {
 	let renderedResults = sponsoredBills.map((billObj) => renderSponsoredBillResults(billObj));	
 	elementID = '.'	+ legislatorID
 	$(elementID).find('.sponsored-bills-list').html(renderedResults);
-}
-
-function renderSponsoredBillResults(billObj) {
-	context = {
-		number: billObj.number,
-		id: billObj.bill_id,
-		title: renderTitle(billObj),
-		dateField: relevantBillDateType(billObj),
-		congress: billObj.congress,
-		uri: billObj.bill_uri,
-	};
-	let cached_uri = context.id + '_uri';
-	PAGE_CACHE[cached_uri] = context.uri;
-	// uri cached to be retrieved on click
-	return `
-		<li><p><a href="#?type=b&id=${context.id}" id="${context.id}" class="bill-request">${context.title}</a></p>
-			<p>Congress: <span class="js-congress-num">${context.congress}</span> | Bill number: ${context.number} | ${context.dateField} </p>
-		</li>
-	`
 }
 
 function getMemberListFromPropublica(chamber,callback) {	
@@ -163,6 +137,51 @@ function getSpecficRepPropublica(id, callback) {
 	})
 } 
 
+function displayVotePositions(positionData) {	
+	let voteResults = positionData[0].votes.map(renderVotePositions);	
+	$('.vote-positions-table').append(voteResults);
+}
+
+function getPositionIcon(position) {
+	if (position === "Yes") {
+		return `<i class="fa fa-thumbs-up" aria-hidden="true"></i> Yes`;
+	} else if (position === "No") {
+		return `<i class="fa fa-thumbs-down" aria-hidden="true"></i> No`;
+	} else {
+		return `<i class="fa fa-meh-o" aria-hidden="true"></i> ${position}`;
+	}
+}
+
+function getPositionDataFromPropublica(id, callback) {	
+	$.ajax({
+		headers: {'X-API-Key': PROPUBLICA_API_KEY},
+		// ProPub requires key in header
+		url: 'https://api.propublica.org/congress/v1/members/' + id + '/votes.json',
+		datatype: 'json',
+		type: 'GET',
+		success: callback,
+	})
+}
+
+function handleGetVotePositionClick() {
+	$('body').on('click','.get-recent-votes', function(e) {
+		e.preventDefault();
+		$('.get-recent-votes').toggle();
+		$('.vote-positions').toggle();
+		if ($('.vote-positions').is(':visible')) {
+			let currentID = PAGE_CACHE.currently_displayed;
+			if (PAGE_CACHE.members.by_id[currentID].vote_positions) {
+				displayVotePositions(PAGE_CACHE.members.by_id[currentID].vote_positions);
+			} else {
+				getPositionDataFromPropublica(currentID,(data) => {
+					PAGE_CACHE.members.by_id[currentID].vote_positions = data.results;
+					displayVotePositions(data.results);
+				})
+			}	
+		}		
+	})
+}
+
 function handleRepClick() {
 	$('body').on('click','.rep-request', function(e) {
 		e.preventDefault();
@@ -174,7 +193,26 @@ function handleRepClick() {
 			getSpecficRepPropublica(id,displayLegislatorDetails);
 		};
 	})
-}	
+}
+
+function handleShowRecentBillsClick() {
+	$('body').on('click','.show-recent-bills', function(e) {
+		e.preventDefault();
+		$('.show-recent-bills').toggle();
+		$('.sponsored-bills-list').toggle();
+		if ($('.sponsored-bills-list').is(':visible')) {
+			if (PAGE_CACHE.members.recent_bills[context.id]) {
+			// populates legislator tile with recent bills. uses cached version if available.
+				displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],10,context.id);
+			} else {
+				getRecentBillsSponsoredByLegislator(context.id,(results) => {
+					PAGE_CACHE.members.recent_bills[context.id] = results;
+					displaySponsoredBills(results,10,context.id);
+				})
+			}	
+		}		
+	})
+}
 
 function populateCongressMemberInfo() {	
 	// chains json requests to populate page_cache with propublica info about both houses
@@ -219,6 +257,45 @@ function renderLegislatorResults(memberOfCongress) {
 		})
 	}	
 	return html;
+}
+
+function renderSponsoredBillResults(billObj) {
+	context = {
+		number: billObj.number,
+		id: billObj.bill_id,
+		title: renderTitle(billObj),
+		dateField: relevantBillDateType(billObj),
+		congress: billObj.congress,
+		uri: billObj.bill_uri,
+	};
+	let cached_uri = context.id + '_uri';
+	PAGE_CACHE[cached_uri] = context.uri;
+	// uri cached to be retrieved on click
+	return `
+		<li><p><a href="#?type=b&id=${context.id}" id="${context.id}" class="bill-request">${context.title}</a></p>
+			<p>Congress: <span class="js-congress-num">${context.congress}</span> | Bill number: ${context.number} | ${context.dateField} </p>
+		</li>
+	`
+}
+
+function renderVotePositions(vote) {	
+	if (vote.description) {
+		let bill_id = vote.bill.bill_id;		
+		let position = getPositionIcon(vote.position);
+		let question = vote.question;
+		let result = vote.result;
+		return `
+		<tr>
+			<td class="position-bill-name"><a href="#?type=b&id=${bill_id}" id="${bill_id}" class="bill-request">${vote.description}</a></td>
+			<td class="position-vote-question">${vote.question}</td>
+			<td class="position-position">${position}</td>
+			<td class="position-result">${vote.result}</td>
+			<td class="position-vote-date"><time>${vote.date}</time></td>
+		</tr>
+		`
+	} else {
+		return '';
+	};
 }
 
 function searchForCongressMember(searchTerm) {

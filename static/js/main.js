@@ -75,8 +75,10 @@ function handleSearch() {
 			} else {				
 				getBillDataFromPropublica(searchTerm,displayBillResults);	
 			}			
-		} else {			
-			searchForCongressMember(searchTerm.toLowerCase());
+		} else {
+			if (searchTerm != '') {
+				searchForCongressMember(searchTerm.toLowerCase());	
+			}			
 		}
 		$('.search-query').val('');
 	})
@@ -197,6 +199,19 @@ function convertProPubBillTypeToMapLight(ppBillType) {
 	}
 }
 
+function createMapLightCharts(billID) {
+	// retrieves maplight data from cache; if not available, request data, process, cache, then create maps
+	if (PAGE_CACHE.maplight[billID]) {		
+		helperMapLightDataCharts(billID);
+	} else {		
+		getOrgPositionsOnBillfromMaplight(billID,(results) => {			
+			let sectorResults = getSectors(results);			
+			PAGE_CACHE.maplight[billID] = sectorResults;
+			helperMapLightDataCharts(billID);
+		});		
+	};
+}
+
 function getOrgNamesandCounts(sectorObject) {
 	// input: obj with org sector #s as keys and array of orgs by name
 	// output: array of [array of sector names], [# of orgs in that sector]
@@ -273,28 +288,15 @@ function helperMapLightDataCharts(billID) {
 	generateSectorBreakdownChart(sectorsOp,countsOp,"oppose");
 }
 
-function createMapLightCharts(billID) {
-	// retrieves maplight data from cache; if not available, request data, process, cache, then create maps
-	if (PAGE_CACHE.maplight[billID]) {		
-		helperMapLightDataCharts(billID);
-	} else {		
-		getOrgPositionsOnBillfromMaplight(billID,(results) => {			
-			let sectorResults = getSectors(results);			
-			PAGE_CACHE.maplight[billID] = sectorResults;
-			helperMapLightDataCharts(billID);
-		});		
-	};
-}
-
 // page handling
 function pageHandler() {
 	// runs listeners for page
 	displaySplash();
 	handleModalSearchClick();
-	hideBrokenImages();
-	handleSearch();
+	hideBrokenImages();	
+	handleBillClick();	
 	handleRepClick();
-	handleBillClick();
+	handleSearch();
 	handleSearchTypeChange();
 }
 

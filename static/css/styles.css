@@ -586,8 +586,19 @@ a {
 	width: 100%;
 }
 
+.detail-view .show-recent-bills, .detail-view .get-recent-votes {
+	color: #333;
+	margin-bottom: 10px;
+}
+
+.detail-view .show-recent-bills:hover, .detail-view .get-recent-votes:hover {
+	text-decoration: overline;
+	text-decoration: underline;
+}
+
 .detail-view .sponsored-bills {
 	width: 100%;
+	margin-bottom: 15px;
 }
 
 .detail-view .sponsored-bills h3 {
@@ -600,4 +611,53 @@ a {
 	border-bottom: 2px dotted #ccc;
 	padding-bottom: 8px;
 }
+
+.legislator-tile charts {
+	margin-bottom: 15px;
+}
+
+.detail-view .sponsored-bills-list, .detail-view .vote-positions {	
+	margin-top: 15px;
+	padding-left: 18px;	
+}
+
+.fa-thumbs-up {
+	color:  rgb(80, 168, 60);                            
+}
+
+.fa-thumbs-down {
+	color: rgb(145, 35, 27);
+}
+
+.fa-meh-o {
+	color: #ccc;
+}
+
+@media screen and (max-width: 640px) {
+	.position-vote-question, .position-result, .position-vote-date {
+		display: none;
+	}
+}
+
+table {
+	background-color: #eee;
+}
+
+thead {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+th, td {
+	padding: 5px;
+}
+
+tbody tr:nth-child(even) {
+	background-color: #ddd;
+}
+
+tbody tr:nth-child(odd) {
+	background-color: #bbb;
+}
+
 /* end legislator details styling */

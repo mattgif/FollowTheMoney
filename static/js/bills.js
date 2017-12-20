@@ -21,6 +21,7 @@ function displayBill(bill) {
 		summary: summary,
 	}
 
+	PAGE_CACHE.currently_displayed = bill.bill_id;
 	let source = $('#bill_details_template').html();
 	let template = Handlebars.compile(source);
 	let html = template(context);
@@ -148,7 +149,9 @@ function relevantBillDateType(billObj) {
 function renderTitle(billItem) {
 	// makes sure bill titles are reasonable length
 	let title = billItem.short_title ? billItem.short_title : billItem.title;
-	(title.length > settings.titleLength) ? truncate(title) : title;
+	if (title.length > settings.titleLength) {
+		title = truncate(title);
+	}; 
 	return title;
 }
 

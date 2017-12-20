@@ -2,6 +2,7 @@ const PAGE_CACHE = {
 	modal_open: false,
 	congress_populated: false,
 	congress_populating: false,
+	currently_displayed: null,
 	searchTermResults: {
 		b: {},
 		l: {},

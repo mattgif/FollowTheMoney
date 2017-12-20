@@ -8,7 +8,7 @@
 	<link href="https://fonts.googleapis.com/css?family=Raleway:400,800" rel="stylesheet"> 
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
 	<link rel="stylesheet" type="text/css" href="static/css/reset.css" />	
-	<link rel="stylesheet" type="text/css" href="static/css/styles-min.css" />
+	<link rel="stylesheet" type="text/css" href="static/css/styles.css" />
 	<script
   		src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -142,7 +142,7 @@
 			</section>
 			
 			<section class="charts" aria-live="polite">
-				<h2>Data:</h2>
+				<h2>Interest group data:</h2>
 				<div class="charts-support-oppose">
 					<canvas class="support-oppose"></canvas>	
 				</div>
@@ -196,15 +196,37 @@
 						<p>Phone: {{phone}}</p>					
 						<p>{{office}}</p>
 					</div>
+
+				</div>
+				<div class="legislator-collapsables">
 					<section class="sponsored-bills">
-						<h3>Recently sponsored bills:</h3>
-						<ul class="sponsored-bills-list" aria-live="polite"></ul>
+						<a href="#" class="show-recent-bills"><i class="fa fa-plus-circle" aria-hidden="true"></i> Show recently sponsored bills</a>
+						<a href="#" class="show-recent-bills" hidden><i class="fa fa-minus-circle" aria-hidden="true"></i> Hide recently sponsored bills</a>						
+						<ul class="sponsored-bills-list" aria-live="polite" hidden></ul>
 					</section>	
+					<section class="vote-positions-container" class="vote-positions" aria-live="polite">
+						<a href="#" class="get-recent-votes"><i class="fa fa-plus-circle" aria-hidden="true"></i> Show recent vote positions</a>
+						<a href="#" class="get-recent-votes" hidden><i class="fa fa-minus-circle" aria-hidden="true"></i> Hide recent vote positions</a>
+						<div class="vote-positions" aria-live="polite" hidden>
+							<table >
+								<thead>
+									<tr>
+										<th>Bill</th>																		
+										<th class="position-vote-question">Question</th>
+										<th>Position</th>
+										<th class="position-result">Result</th>
+										<th class="position-vote-date">Date</th>
+									</tr>
+								</thead>			
+								<tbody class="vote-positions-table">								
+								</tbody>
+							</table>
+
+						</div>
+					</section>
 				</div>
 				
-			</section>
-
-			<section class="vote-positions" class="vote-positions" aria-live="polite"></section>
+			</section>			
 			<section class="charts">
 				<div class="charts-missed-votes">
 					<canvas class="missed-votes"></canvas>	
@@ -212,9 +234,8 @@
 				<div class="charts-party-loyalty">
 					<canvas class="party-loyalty"></canvas>
 				</div>
-				
-
 			</section>
+
 
 		</div>
 	</script>
@@ -222,11 +243,11 @@
 	<!-- end handlebars templates -->
 		
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-	<script type="text/javascript" src="static/js/polifluence-min.js"></script>	
-	<!-- <script type="text/javascript" src="static/js/bills.js"></script>
+	<!-- <script type="text/javascript" src="static/js/polifluence-min.js"></script> -->	
+	<script type="text/javascript" src="static/js/bills.js"></script>
 	<script type="text/javascript" src="static/js/charting.js"></script>
 	<script type="text/javascript" src="static/js/legislators.js"></script>
 	<script type="text/javascript" src="static/js/pagecache.js"></script>	
-	<script type="text/javascript" src="static/js/main.js"></script> -->
+	<script type="text/javascript" src="static/js/main.js"></script>
 </body>
 </html>
