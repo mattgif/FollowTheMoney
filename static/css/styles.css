@@ -74,6 +74,10 @@ strong {
 	color: red;
 }
 
+.affil-R::before {
+	content: ;
+}
+
 .affil-D {
 	color: blue;
 }
@@ -352,7 +356,7 @@ strong {
 	border-radius: 4px;
 	padding: 20px 8px;
 	line-height: 1.2em;	
-	text-align: center;
+	text-align: center;	
 }
 
 .splash-content .instructions ul {

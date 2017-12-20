@@ -17,6 +17,7 @@ function displayBill(bill) {
 		sponsor_title: bill.sponsor_title,
 		sponsor: bill.sponsor_name,
 		sponsor_party: bill.sponsor_party,
+		party_icon: settings.party_icon[bill.sponsor_party],
 		sponsor_state: bill.sponsor_state,
 		summary: summary,
 	}
@@ -129,6 +130,7 @@ function renderBillResults(item) {
 		sponsor: item.sponsor_name,
 		sponsor_title: item.sponsor_title,
 		sponsor_party: item.sponsor_party,
+		party_icon: settings.party_icon[item.sponsor_party],
 		state: item.sponsor_state,
 		subject: (item.primary_subject) ? `Subject: ${item.primary_subject}` : '',
 		title: title,

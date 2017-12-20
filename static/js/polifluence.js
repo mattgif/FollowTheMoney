@@ -497,6 +497,7 @@ function displayBill(bill) {
 		sponsor_title: bill.sponsor_title,
 		sponsor: bill.sponsor_name,
 		sponsor_party: bill.sponsor_party,
+		party_icon: settings.party_icon[bill.sponsor_party],
 		sponsor_state: bill.sponsor_state,
 		summary: summary,
 	}
@@ -609,6 +610,7 @@ function renderBillResults(item) {
 		sponsor: item.sponsor_name,
 		sponsor_title: item.sponsor_title,
 		sponsor_party: item.sponsor_party,
+		party_icon: settings.party_icon[item.sponsor_party],
 		state: item.sponsor_state,
 		subject: (item.primary_subject) ? `Subject: ${item.primary_subject}` : '',
 		title: title,
@@ -815,6 +817,7 @@ function displayLegislatorDetails(memberOfCongress) {
 		missed_votes: m.missed_votes_pct,
 		name: m.first_name + ' ' + m.last_name,
 		party: m.party,
+		party_icon: settings.party_icon[m.party],
 		phone: m.phone,
 		state: m.state,
 		title: m.short_title,
@@ -828,8 +831,6 @@ function displayLegislatorDetails(memberOfCongress) {
 	$('.detail-view').html(html);
 	generateMissedVoteChart(context.missed_votes);
 	generatePartyLoyaltyChart(context.votes_with_party_pct);
-	handleGetVotePositionClick()
-	handleShowRecentBillsClick();
 	handleReturnToResults();
 }
 
@@ -1002,10 +1003,10 @@ function handleRepClick() {
 
 function handleShowRecentBillsClick() {
 	$('body').on('click','.show-recent-bills', function(e) {
-		e.preventDefault();
+		e.preventDefault();			
 		$('.show-recent-bills').toggle();
 		$('.sponsored-bills-list').toggle();
-		if ($('.sponsored-bills-list').is(':visible')) {
+		if ($('.sponsored-bills-list').is(':visible')) {			
 			if (PAGE_CACHE.members.recent_bills[context.id]) {
 			// populates legislator tile with recent bills. uses cached version if available.
 				displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],10,context.id);
@@ -1042,6 +1043,7 @@ function renderLegislatorResults(memberOfCongress) {
 		name: m.first_name + ' ' + m.last_name,
 		office: m.office,
 		party: m.party,
+		party_icon: settings.party_icon[m.party],
 		phone: m.phone,
 		state: m.state,
 		title: m.short_title,
@@ -1136,6 +1138,11 @@ const settings = {
 	// settings for how data gets displayed
 	titleLength: 125,
 	splashDisplayed: 1,
+	party_icon: {
+		R: 'elephant',
+		D: 'donkey',
+		I: 'capitol',
+	},
 }
 
 // core functionality - shared by bills.js and legislators.js
@@ -1427,6 +1434,8 @@ function pageHandler() {
 	handleRepClick();
 	handleSearch();
 	handleSearchTypeChange();
+	handleShowRecentBillsClick();
+	handleGetVotePositionClick();
 }
 
 $(pageHandler())

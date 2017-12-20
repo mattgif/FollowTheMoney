@@ -7,6 +7,11 @@ const settings = {
 	// settings for how data gets displayed
 	titleLength: 125,
 	splashDisplayed: 1,
+	party_icon: {
+		R: 'elephant',
+		D: 'donkey',
+		I: 'capitol',
+	},
 }
 
 // core functionality - shared by bills.js and legislators.js
@@ -298,6 +303,8 @@ function pageHandler() {
 	handleRepClick();
 	handleSearch();
 	handleSearchTypeChange();
+	handleShowRecentBillsClick();
+	handleGetVotePositionClick();
 }
 
 $(pageHandler())

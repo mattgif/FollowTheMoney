@@ -11,6 +11,7 @@ function displayLegislatorDetails(memberOfCongress) {
 		missed_votes: m.missed_votes_pct,
 		name: m.first_name + ' ' + m.last_name,
 		party: m.party,
+		party_icon: settings.party_icon[m.party],
 		phone: m.phone,
 		state: m.state,
 		title: m.short_title,
@@ -24,8 +25,6 @@ function displayLegislatorDetails(memberOfCongress) {
 	$('.detail-view').html(html);
 	generateMissedVoteChart(context.missed_votes);
 	generatePartyLoyaltyChart(context.votes_with_party_pct);
-	handleGetVotePositionClick()
-	handleShowRecentBillsClick();
 	handleReturnToResults();
 }
 
@@ -198,10 +197,10 @@ function handleRepClick() {
 
 function handleShowRecentBillsClick() {
 	$('body').on('click','.show-recent-bills', function(e) {
-		e.preventDefault();
+		e.preventDefault();			
 		$('.show-recent-bills').toggle();
 		$('.sponsored-bills-list').toggle();
-		if ($('.sponsored-bills-list').is(':visible')) {
+		if ($('.sponsored-bills-list').is(':visible')) {			
 			if (PAGE_CACHE.members.recent_bills[context.id]) {
 			// populates legislator tile with recent bills. uses cached version if available.
 				displaySponsoredBills(PAGE_CACHE.members.recent_bills[context.id],10,context.id);
@@ -238,6 +237,7 @@ function renderLegislatorResults(memberOfCongress) {
 		name: m.first_name + ' ' + m.last_name,
 		office: m.office,
 		party: m.party,
+		party_icon: settings.party_icon[m.party],
 		phone: m.phone,
 		state: m.state,
 		title: m.short_title,

@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<meta name="description" content="Trace the money behind legislation" />
+	<meta name="description" content="Find the influencers behind bills" />
 	<meta name="viewport" content="width=device-width" />
 	<title>polifluence</title>
 	<link href="https://fonts.googleapis.com/css?family=Raleway:400,800" rel="stylesheet"> 
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-	<link rel="stylesheet" type="text/css" href="static/css/reset.css" />	
+	<link rel="stylesheet" type="text/css" href="static/css/reset.css" />
+	<link rel="stylesheet" type="text/css" href="static/css/govicons.min.css">	
 	<link rel="stylesheet" type="text/css" href="static/css/styles-min.css" />
 	<script
   		src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -112,7 +113,7 @@
 			<h4><a href="#?type=b&id={{bill_id}}" id="{{bill_id}}" class="bill-request">{{title}}</a></h4>
 			<p>Bill number: {{number}} | {{datefield}}</p>
 			<p>{{subject}}</p>
-			<p>Sponsor: <a href="#?type=l&id={{sponsor_id}}" id={{sponsor_id}} class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{state}})</a></p>
+			<p>Sponsor: <a href="#?type=l&id={{sponsor_id}}" id={{sponsor_id}} class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}"><i class="gi gi-{{party_icon}}" aria-hidden="true"></i> {{sponsor_party}}</span>-{{state}})</a></p>
 		</div>
 	</script>
 	<script type="text/x-handlebars-template" id="bill_details_template">
@@ -131,7 +132,7 @@
 						<a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request"><img class="sponsor-image" src="https://theunitedstates.io/images/congress/225x275/{{sponsor_id}}.jpg" alt="{{sponsor}} official portrait" onerror="this.style.display='none'"></a>	
 					</div>					
 					<h2>Sponsor:</h2>
-					<p><a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}">{{sponsor_party}}</span>-{{sponsor_state}})</a></p>
+					<p><a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}"><i class="gi gi-{{party_icon}}" aria-hidden="true"></i> {{sponsor_party}}</span>-{{sponsor_state}})</a></p>
 					<div class="donors">
 					</div>
 				</div>
@@ -163,7 +164,7 @@
 					<a href="#?type=l&id={{id}}" id="{{id}}" class="rep-request"><img src="https://theunitedstates.io/images/congress/225x275/{{id}}.jpg" alt="{{title}} {{name}} official portrait" onerror="this.style.display='none'"></a>
 				</div>
 				<div class="legislator-name">
-					<a href="#?type=l&id={{id}}" id="{{id}}" class="rep-request">{{title}} {{name}} (<span class="affil-{{party}}">{{party}}</span>-{{state}})</a>
+					<a href="#?type=l&id={{id}}" id="{{id}}" class="rep-request">{{title}} {{name}} (<span class="affil-{{party}}"><i class="gi gi-{{party_icon}}" aria-hidden="true"></i> {{party}}</span>-{{state}})</a>
 				</div>
 				<div class="legislator-contact-info">
 					<a href="{{url}}">Official Website</a>
@@ -188,7 +189,7 @@
 				</div>
 				<div class="legislator-name">
 					<h2>{{title}} {{name}}</h2>
-					<h3>(<span class="affil-{{party}}">{{party}}</span>-{{state}})</h3>
+					<h3>(<span class="affil-{{party}}"><i class="gi gi-{{party_icon}}" aria-hidden="true"></i> {{party}}</span>-{{state}})</h3>
 				</div>
 				<div class="topmatter">
 					<div class="legislator-contact-info">
@@ -244,12 +245,5 @@
 		
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
 	<script type="text/javascript" src="static/js/polifluence-min.js"></script>	
-<!-- 	<script type="text/javascript" src="static/js/pagecache.js"></script>
-	<script type="text/javascript" src="static/js/bills.js"></script>
-	<script type="text/javascript" src="static/js/charting.js"></script>
-	<script type="text/javascript" src="static/js/legislators.js"></script>
-	<script type="text/javascript" src="static/js/main.js"></script> -->
-
-
 </body>
 </html>
