@@ -18,8 +18,10 @@ const settings = {
 function clearContent() {
 	// clears splash elements and removes any results or details currently displayed; used to transition to new page
 	hideSplash();
-	$('.results').html('')
-	$('.detail-view').html('')
+	$('.results').html('');
+	$('.detail-view').html('');
+	$('.results').show();
+	$('.detail-view').show();
 	showTopBarSearch();
 }
 
@@ -27,6 +29,8 @@ function displaySplash() {
 	// clears out all elements and displays the landing html
 	settings.splashDisplayed = 1;
 	$('nav').html('');
+	$('.results').hide();
+	$('.detail-view').hide();
 	$('.results').html('');
 	$('.detail-view').html('');
 	$('nav').prop('hidden',true)

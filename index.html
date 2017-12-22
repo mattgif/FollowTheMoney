@@ -5,11 +5,11 @@
 	<meta name="description" content="Find the influencers behind bills" />
 	<meta name="viewport" content="width=device-width" />
 	<title>polifluence</title>
-	<link href="https://fonts.googleapis.com/css?family=Raleway:400,800" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css?family=Raleway:400,800" rel="stylesheet"/> 
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
 	<link rel="stylesheet" type="text/css" href="static/css/reset.css" />
-	<link rel="stylesheet" type="text/css" href="static/css/govicons.min.css">	
-	<link rel="stylesheet" type="text/css" href="static/css/styles-min.css" />
+	<link rel="stylesheet" type="text/css" href="static/css/govicons.min.css"/>	
+	<link rel="stylesheet" type="text/css" href="static/css/styles.css" />
 	<script
   		src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -135,6 +135,14 @@
 					<p><a href="#?type=l&id={{sponsor_id}}" id="{{sponsor_id}}" class="rep-request">{{sponsor_title}} {{sponsor}} (<span class="affil-{{sponsor_party}}"><i class="gi gi-{{party_icon}}" aria-hidden="true"></i> {{sponsor_party}}</span>-{{sponsor_state}})</a></p>
 					<div class="donors">
 					</div>
+
+				</div>
+				<div class="bill-number">
+					<p>Bill number: {{number}}</p>
+				</div>
+				<div class="major-action">
+					<p>Lastest major action:</p>
+					<p>{{action}}</p>
 				</div>
 				<div class="bill-summary">
 					<h2>Summary:</h2>
@@ -197,7 +205,6 @@
 						<p>Phone: {{phone}}</p>					
 						<p>{{office}}</p>
 					</div>
-
 				</div>
 				<div class="legislator-collapsables">
 					<section class="sponsored-bills">
@@ -244,11 +251,11 @@
 	<!-- end handlebars templates -->
 		
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-	<script type="text/javascript" src="static/js/polifluence-min.js"></script>	
-<!-- 	<script type="text/javascript" src="static/js/pagecache.js"></script>
+	<!-- <script type="text/javascript" src="static/js/polifluence-min.js"></script>	 -->
+	<script type="text/javascript" src="static/js/pagecache.js"></script>
 	<script type="text/javascript" src="static/js/bills.js"></script>
 	<script type="text/javascript" src="static/js/charting.js"></script>
 	<script type="text/javascript" src="static/js/legislators.js"></script>
-	<script type="text/javascript" src="static/js/main.js"></script> -->
+	<script type="text/javascript" src="static/js/main.js"></script>
 </body>
 </html>

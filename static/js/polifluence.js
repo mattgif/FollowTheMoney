@@ -483,15 +483,18 @@ const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search
 // bill functionality
 // depends on main.js
 
-function displayBill(bill) {	
+function displayBill(bill) {
+	$('.results').hide();
 	clearContent();		
 	let summary = getBillSummary(bill);
 	let datefield = relevantBillDateType(bill);
 
 	// handlebars context dic and calls below
 	let context = {
+		action: bill.latest_major_action,
 		title: bill.title,
 		date: datefield,
+		number: bill.number,
 		sponsor_id: bill.sponsor_id,
 		sponsor_uri: bill.sponsor_uri,
 		sponsor_title: bill.sponsor_title,
@@ -514,7 +517,8 @@ function displayBill(bill) {
 	// retrieves results info from cache when 'return' link is clicked
 }
 
-function displayBillResults(data) {	
+function displayBillResults(data) {
+	$('.detail-view').hide();	
 	let resultCount = data.results[0].num_results;
 	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
 	if (resultCount > 0) {		
@@ -570,7 +574,7 @@ function getBillSummary(billObj) {
 function handleBillClick() {	
 	$('body').on('click','.bill-request', function(e) {				
 		e.preventDefault();
-		e.stopPropagation();
+		e.stopPropagation();		
 		let bill_id = $(this).attr('id');
 		if (PAGE_CACHE[bill_id]) {
 			displayBill(PAGE_CACHE[bill_id]);	
@@ -810,6 +814,7 @@ PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/';
 // depends on main.js
 
 function displayLegislatorDetails(memberOfCongress) {
+	$('.results').hide();	
 	clearContent();
 	let m = memberOfCongress
 	context = {				
@@ -835,7 +840,8 @@ function displayLegislatorDetails(memberOfCongress) {
 	handleReturnToResults();
 }
 
-function displayLegislatorResults(matchingMembers) {		
+function displayLegislatorResults(matchingMembers) {	
+	$('.detail-view').hide();		
 	let resultCount = matchingMembers.length;
 	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
 	if (resultCount > 0) {		
@@ -1089,14 +1095,16 @@ function renderSponsoredBillResults(billObj) {
 }
 
 function renderVotePositions(vote) {	
-	if (vote.description) {
+	if (vote.description) {		
 		let bill_id = vote.bill.bill_id;		
 		let position = getPositionIcon(vote.position);
 		let question = vote.question;
 		let result = vote.result;
+		let cached_uri = bill_id + '_uri';
+		PAGE_CACHE[cached_uri] = vote.bill.bill_uri;
 		return `
 		<tr>
-			<td class="position-bill-name">${vote.description}</td>
+			<td class="position-bill-name"><a href="#?type=b&id=${bill_id}" id="${bill_id}" class="bill-request">${vote.description}</a></td>
 			<td class="position-vote-question">${vote.question}</td>
 			<td class="position-position">${position}</td>
 			<td class="position-result">${vote.result}</td>
@@ -1150,8 +1158,10 @@ const settings = {
 function clearContent() {
 	// clears splash elements and removes any results or details currently displayed; used to transition to new page
 	hideSplash();
-	$('.results').html('')
-	$('.detail-view').html('')
+	$('.results').html('');
+	$('.detail-view').html('');
+	$('.results').show();
+	$('.detail-view').show();
 	showTopBarSearch();
 }
 
@@ -1159,6 +1169,8 @@ function displaySplash() {
 	// clears out all elements and displays the landing html
 	settings.splashDisplayed = 1;
 	$('nav').html('');
+	$('.results').hide();
+	$('.detail-view').hide();
 	$('.results').html('');
 	$('.detail-view').html('');
 	$('nav').prop('hidden',true)

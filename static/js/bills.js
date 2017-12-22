@@ -3,15 +3,18 @@ const PROPUBLICA_ENDPOINT = 'https://api.propublica.org/congress/v1/bills/search
 // bill functionality
 // depends on main.js
 
-function displayBill(bill) {	
+function displayBill(bill) {
+	$('.results').hide();
 	clearContent();		
 	let summary = getBillSummary(bill);
 	let datefield = relevantBillDateType(bill);
 
 	// handlebars context dic and calls below
 	let context = {
+		action: bill.latest_major_action,
 		title: bill.title,
 		date: datefield,
+		number: bill.number,
 		sponsor_id: bill.sponsor_id,
 		sponsor_uri: bill.sponsor_uri,
 		sponsor_title: bill.sponsor_title,
@@ -34,7 +37,8 @@ function displayBill(bill) {
 	// retrieves results info from cache when 'return' link is clicked
 }
 
-function displayBillResults(data) {	
+function displayBillResults(data) {
+	$('.detail-view').hide();	
 	let resultCount = data.results[0].num_results;
 	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
 	if (resultCount > 0) {		
@@ -90,7 +94,7 @@ function getBillSummary(billObj) {
 function handleBillClick() {	
 	$('body').on('click','.bill-request', function(e) {				
 		e.preventDefault();
-		e.stopPropagation();
+		e.stopPropagation();		
 		let bill_id = $(this).attr('id');
 		if (PAGE_CACHE[bill_id]) {
 			displayBill(PAGE_CACHE[bill_id]);	

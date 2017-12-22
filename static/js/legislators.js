@@ -3,6 +3,7 @@ PROPUBLICA_MEMBER_ENDPOINT = 'https://api.propublica.org/congress/v1/';
 // depends on main.js
 
 function displayLegislatorDetails(memberOfCongress) {
+	$('.results').hide();	
 	clearContent();
 	let m = memberOfCongress
 	context = {				
@@ -28,7 +29,8 @@ function displayLegislatorDetails(memberOfCongress) {
 	handleReturnToResults();
 }
 
-function displayLegislatorResults(matchingMembers) {		
+function displayLegislatorResults(matchingMembers) {	
+	$('.detail-view').hide();		
 	let resultCount = matchingMembers.length;
 	let resultCountText = `${resultCount} ${pluralize(resultCount,'result')} found`;
 	if (resultCount > 0) {		
@@ -282,14 +284,16 @@ function renderSponsoredBillResults(billObj) {
 }
 
 function renderVotePositions(vote) {	
-	if (vote.description) {
+	if (vote.description) {		
 		let bill_id = vote.bill.bill_id;		
 		let position = getPositionIcon(vote.position);
 		let question = vote.question;
 		let result = vote.result;
+		let cached_uri = bill_id + '_uri';
+		PAGE_CACHE[cached_uri] = vote.bill.bill_uri;
 		return `
 		<tr>
-			<td class="position-bill-name">${vote.description}</td>
+			<td class="position-bill-name"><a href="#?type=b&id=${bill_id}" id="${bill_id}" class="bill-request">${vote.description}</a></td>
 			<td class="position-vote-question">${vote.question}</td>
 			<td class="position-position">${position}</td>
 			<td class="position-result">${vote.result}</td>
