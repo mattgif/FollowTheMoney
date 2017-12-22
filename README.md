@@ -1,7 +1,5 @@
 # polifluence
 
-polifluence
-============
 https://mattgif.github.io/polifluence/ 
 
 Summary
