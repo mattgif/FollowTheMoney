@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/mattgif/polifluence/master/logo.svg" alt="polifluence logo">
+<img src="https://raw.githubusercontent.com/mattgif/polifluence/master/logo.png" alt="polifluence logo">
 # polifluence
 
 https://polifluence.netlify.com
