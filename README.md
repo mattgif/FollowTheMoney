@@ -1,17 +1,14 @@
 # polifluence
 
-https://mattgif.github.io/polifluence/ 
+https://polifluence.netlify.com
 
 Summary
 -------
 
-polifluence combines ProPublica's congress and member APIs with MapLight special interest data
-to show the influence behind legislation.
+polifluence links legislation with campaign contributions. Search for a member of Congress to view their largest contributors by company or industry, or search for legislation to view its (co)sponsors and their contributors. polifluence combines data from ProPublica's congress and member APIs with OpenSecrets' contribution data.
 
-You can search for a bill to find its sponsor and charts showing which special interest groups have lobbied for and against it. You can search for a legislator to find bills they've sponsored, their voting record, and charts showing how frequently they vote across party lines.
-
-![polifluence splash page](static/img/polifluence_screen1.png)
-![polifluence bill page](static/img/polifluence_screen2.png)
+![polifluence splash page](screenshots/desktop_landing.png)
+![polifluence bill page](screenshots/desktop_member.png)
 
 Technology
 ----------
